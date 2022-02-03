@@ -1,0 +1,28 @@
+{
+  "name": "promatic_energy_monitor_backend",
+  "version": "1.0.0",
+  "description": "backend system for iot energy meter",
+  "main": "index.js",
+  "scripts": {
+    "compile": "tsc",
+    "start": "node dist/app.js",
+    "test": "nodemon dist/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MarcoCiau/promatic_energy_monitor_backend.git"
+  },
+  "author": "marco ciau",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MarcoCiau/promatic_energy_monitor_backend/issues"
+  },
+  "homepage": "https://github.com/MarcoCiau/promatic_energy_monitor_backend#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.2"
+  },
+  "devDependencies": {
+    "typescript": "^4.5.5"
+  }
+}
