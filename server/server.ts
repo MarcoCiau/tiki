@@ -1,6 +1,6 @@
 import express, { Application } from 'express';
 import envConfig from '../config/config';
-// import connectDB from '../config/db';
+import connectDB from '../config/db';
 import cors from 'cors';
 import deviceRoutes from '../routes/device';
 class Server {
@@ -34,8 +34,8 @@ class Server {
 
     async init() {
         try {
-            // const isDBConnected = await connectDB();
-            // console.log('DB Connected!');
+            await connectDB();
+            console.log('DB Connected!');
             this.listen();
         } catch (error) {
             console.log('Init Server Failed : ', error);
