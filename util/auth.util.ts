@@ -28,7 +28,7 @@ const verifyJWT = (token: string, privateKey: string) => {
         jwt.verify(token, privateKey, (err, decoded) => {
             if (err) {
                 console.log("Verify Token Error: ", err);
-                resolve(null);
+                reject(err);
             }
             resolve(decoded);
         })
