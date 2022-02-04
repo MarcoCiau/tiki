@@ -48,19 +48,19 @@ export const createDevice = async (req: Request, res: Response) => {
 }
 
 export const updateDevice = async (req: Request, res: Response) => {
-    res.status(200).json({ msg: 'success - update device'});
-    // try {
-    //     const { id } = req.params;
-    //     const body = req.body;
-    //     const result = await ClientModel.findOneAndUpdate({ _id: id }, { ...body }, { new: true });
-    //     if (!result) {
-    //         return res.status(400).json({ msg: 'Client doesn\'t exists' });
-    //     }
-    //     res.status(200).json({ msg: 'success', client: result });
-    // } catch (error) {
-    //     console.log('update client failed.', error);
-    //     res.status(500).json({ msg: 'something went wrong.' });
-    // }
+    try {
+        const { id } = req.params;
+        const body = req.body;
+        
+        const result = await DeviceModel.findOneAndUpdate({ _id: id }, { ...body }, { new: true });
+        if (!result) {
+            return res.status(400).json({ msg: 'Device doesn\'t exists' });
+        }
+        res.status(200).json({ msg: 'success', device: result });
+    } catch (error) {
+        console.log('update device failed.', error);
+        res.status(500).json({ msg: 'something went wrong.' });
+    }
 }
 
 export const deleteDevice = async (req: Request, res: Response) => {

@@ -7,7 +7,7 @@ const router = Router();
 router.get('/', authValidator.validateJWT, deviceController.getDevices);
 router.get('/:id', authValidator.validateJWT, deviceValidator.mongoIdRule(), deviceValidator.result, deviceController.getDevice);
 router.post('/', authValidator.validateJWT, deviceValidator.createRules(), deviceValidator.result, deviceController.createDevice);
-router.put('/:id', authValidator.validateJWT, deviceController.updateDevice);
+router.put('/:id', authValidator.validateJWT, deviceValidator.mongoIdRule(), deviceValidator.updateRules(), deviceValidator.result, deviceController.updateDevice);
 router.delete('/:id', authValidator.validateJWT, deviceValidator.mongoIdRule(), deviceValidator.result, deviceController.deleteDevice);
 
 export default router;
