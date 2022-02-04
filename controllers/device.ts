@@ -1,53 +1,53 @@
 import { Request, Response } from 'express';
 import DeviceModel from '../models/device';
+import { generateDeviceToken } from '../util/auth.util';
 
 export const getDevices = async (req: Request, res: Response) => {
-    res.status(200).json({ msg: 'success - get devices'});
-    // try {
-    //     const result = await DeviceModel.find();
-    //     res.status(200).json({ msg: 'success', devices: result });
-    // } catch (error) {
-    //     console.log('Get all Devices failed.', error);
-    //     res.status(500).json({ msg: 'something went wrong.' })
-    // }
+    try {
+        const result = await DeviceModel.find();
+        res.status(200).json({ msg: 'success', devices: result });
+    } catch (error) {
+        console.log('Get all Devices failed.', error);
+        res.status(500).json({ msg: 'something went wrong.' })
+    }
 }
 
 export const getDevice = async (req: Request, res: Response) => {
-    res.status(200).json({ msg: 'success - get device'});
-
-    // try {
-    //     const { id } = req.params;
-    //     const result = await DeviceModel.findOne({ _id: id });
-    //     if (!result) {
-    //         return res.status(400).json({ msg: 'Device doesn\'t exists' });
-    //     }
-    //     res.status(200).json({ msg: 'success', device: result });
-    // } catch (error) {
-    //     console.log('Get client failed.', error);
-    //     res.status(500).json({ msg: 'something went wrong.' })
-    // }
+    try {
+        const { id } = req.params;
+        const result = await DeviceModel.findOne({ _id: id });
+        if (!result) {
+            return res.status(400).json({ msg: 'Device doesn\'t exists' });
+        }
+        res.status(200).json({ msg: 'success', device: result });
+    } catch (error) {
+        console.log('Get client failed.', error);
+        res.status(500).json({ msg: 'something went wrong.' })
+    }
 }
 
 export const createDevice = async (req: Request, res: Response) => {
-
-    // console.log();
-    res.status(200).json({ msg: 'success - create devuce'});
-    // try {
-    //     const { email } = req.body;
-    //     const clientExists = await DeviceModel.findOne({ email });
-    //     if (clientExists) return res.status(400).json({ msg: 'Client already exists.' });
-    //     const clientDocument = new ClientModel({
-    //         ...req.body
-    //     });
-    //     const result = await clientDocument.save();
-    //     res.status(200).json({ msg: 'success', client: result });
-    // } catch (error) {
-    //     console.log('Create client failed.', error);
-    //     res.status(500).json({ msg: 'something went wrong.' })
-    // }
+    try {
+        const {name, mac, type } = req.body;//TODO: handle device Type
+        const {userId} = res.locals.jwtPayload;
+        const clientExists = await DeviceModel.findOne({ _id: userId });
+        if (clientExists) return res.status(400).json({ msg: 'User id doesn\'t exists.' });
+        const deviceToken = await generateDeviceToken(32);
+        const deviceDocument = new DeviceModel({
+            userId,
+            token: deviceToken,
+            name : name,
+            mac
+        });
+        const result = await deviceDocument.save();
+        res.status(200).json({ msg: 'success', device: result });
+    } catch (error) {
+        console.log('Create Device failed.', error);
+        res.status(500).json({ msg: 'something went wrong.' })
+    }
 }
 
-export const updateClient = async (req: Request, res: Response) => {
+export const updateDevice = async (req: Request, res: Response) => {
     res.status(200).json({ msg: 'success - update device'});
     // try {
     //     const { id } = req.params;
@@ -63,18 +63,16 @@ export const updateClient = async (req: Request, res: Response) => {
     // }
 }
 
-export const deleteClient = async (req: Request, res: Response) => {
-    res.status(200).json({ msg: 'success - delete device'});
-
-    // try {
-    //     const { id } = req.params;
-    //     const result = await ClientModel.findByIdAndDelete({ _id: id });
-    //     if (!result) {
-    //         return res.status(400).json({ msg: 'Client doesn\'t exists' });
-    //     }
-    //     res.status(200).json({ msg: 'success', client: result });
-    // } catch (error) {
-    //     console.log('Delete client failed.', error);
-    //     res.status(500).json({ msg: 'something went wrong.' });
-    // }
+export const deleteDevice = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const result = await DeviceModel.findByIdAndDelete({ _id: id });
+        if (!result) {
+            return res.status(400).json({ msg: 'Device doesn\'t exists' });
+        }
+        res.status(200).json({ msg: 'success', device: result });
+    } catch (error) {
+        console.log('Delete Device failed.', error);
+        res.status(500).json({ msg: 'something went wrong.' });
+    }
 }
