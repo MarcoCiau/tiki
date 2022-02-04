@@ -7,7 +7,8 @@ interface Device {
     mac: string,
     connected: boolean,
     lastConnected: Date,
-    lastDisconnected: Date
+    lastDisconnected: Date,
+    lastReport: Date
 }
 
 const deviceSchema: Schema<Device> = new Schema({
@@ -37,7 +38,10 @@ const deviceSchema: Schema<Device> = new Schema({
     },
     lastDisconnected : {
         type: Date
-    }
+    },
+    lastReport : {
+        type: Date
+    },
 });
 
 deviceSchema.methods.toJSON = function () {
