@@ -18,16 +18,15 @@ const deviceSchema: Schema<Device> = new Schema({
     },
     token: {
         type: String,
-        required: true
+        required: true,
     },
     name: {
         type: String,
-        required: true
+        required: true,
     },
     mac: {
         type: String,
-        unique: true,
-        required: true
+        required: true,
     },
     connected: {
         type: Boolean,
