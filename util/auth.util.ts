@@ -4,6 +4,7 @@ compare password
 generate JWT
 validate JWT
 */
+import crypto from "crypto";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import config from '../config/config';
@@ -79,5 +80,16 @@ export const getUserIdFromToken = (token: string) => {
     } catch (error) {
 
     }
+};
+
+export const generateDeviceToken = (len: number) => {
+    return new Promise((resolve, reject) => {
+        crypto.randomBytes(len, (err, buff) => {
+            if (err) {
+                reject(err);
+            }
+            resolve(buff.toString('hex'));
+        })
+    })
 };
 
