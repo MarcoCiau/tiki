@@ -2,6 +2,7 @@ import express, { Application } from 'express';
 import envConfig from '../config/config';
 import connectDB from '../config/db';
 import cors from 'cors';
+import authRoutes from '../routes/auth';
 import deviceRoutes from '../routes/device';
 class Server {
     private app: Application;
@@ -23,6 +24,7 @@ class Server {
     }
 
     routes() {
+        this.app.use('/api/v1/auth', authRoutes);
         this.app.use('/api/v1/device', deviceRoutes);
     }
 
