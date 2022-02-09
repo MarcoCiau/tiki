@@ -4,6 +4,7 @@ import connectDB from '../config/db';
 import cors from 'cors';
 import authRoutes from '../routes/auth';
 import deviceRoutes from '../routes/device';
+import readsRoutes from '../routes/reads';
 class Server {
     private app: Application;
     private port: string;
@@ -26,6 +27,7 @@ class Server {
     routes() {
         this.app.use('/api/v1/auth', authRoutes);
         this.app.use('/api/v1/device', deviceRoutes);
+        this.app.use('/api/v1/read', readsRoutes);
     }
 
     listen() {
