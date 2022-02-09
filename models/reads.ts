@@ -1,10 +1,11 @@
 import { Schema, model, Types } from "mongoose";
+import { sensorType, unitType } from "../util/read.types";
 
 interface sensorData {
     _id: Types.ObjectId,
-    type: string,
+    type: sensorType,
     value: number,
-    unit: string
+    unit: unitType
 }
 
 interface Reads {
@@ -25,8 +26,7 @@ const readSchema: Schema<Reads> = new Schema({
     metadata: new Schema<sensorData>({
         type: {
             type: String,
-            enum: ['SINGLE_PHASE','THREE_PHASE'],
-            default : 'SINGLE_PHASE',
+            default: sensorType.curr1,
             required: true
         },
         value: {
@@ -35,8 +35,7 @@ const readSchema: Schema<Reads> = new Schema({
         },
         unit: {
             type: String,
-            enum: ['A','V','KwH', 'N/A'],
-            default : 'N/A',
+            default: unitType.current,
             required: true
         }
     })
