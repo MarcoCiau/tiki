@@ -7,7 +7,6 @@ export const getReads = async (req: Request, res: Response) => {
 
     try {
         const { query = "", from = 0, limit = 5, sort = 1 } = req.query;
-        console.log(query, from, limit, sort);
         const reads: any = await executeReadsQuery(query.toString(), Number(from), Number(limit), Number(sort));
         if (!reads) {
             res.status(400).json({ msg: 'Get all Reads failed.', })
