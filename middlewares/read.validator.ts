@@ -14,17 +14,34 @@ let validateUnitType: CustomValidator = value => {
     return (Object.values(unitType).includes(value))
 }
 
+let validateSortValue: CustomValidator = value => {
+    return (Number(value) === -1 || Number(value) === 1)
+}
+
+let validateQueryString: CustomValidator = value => {
+    return (typeof JSON.parse(value) === 'object');
+}
+
 export const getAllRules = () => {
     return (
         [
             query('from')
                 .notEmpty()
                 .isInt()
-                .isLength({ min: 0 }),
+                .isLength({ min: 0 })
+                .optional(),
             query('limit')
                 .notEmpty()
                 .isInt()
                 .isLength({ min: 1 })
+                .optional(),
+            query('sort')
+                .isInt()
+                .custom(validateSortValue)
+                .optional(),
+            query('query')
+                .custom(validateQueryString)
+                .optional()
         ]
     )
 };
