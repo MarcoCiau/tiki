@@ -7,7 +7,6 @@ const router = Router();
 router.get('/', authValidator.validateJWT, readValidator.getAllRules(), readValidator.result, readsController.getReads);
 router.get('/:id', authValidator.validateJWT, readValidator.mongoIdRule(), readValidator.result, readsController.getRead);
 router.post('/', authValidator.validateJWT, readValidator.createRules(), readValidator.result, readsController.createRead);
-router.put('/:id', authValidator.validateJWT, readValidator.result, readsController.updateRead);
-router.delete('/:id', authValidator.validateJWT, readsController.deleteRead);
+router.delete('/:id', authValidator.validateJWT, readValidator.mongoIdRule(), readValidator.result, readsController.deleteRead);
 
 export default router;
