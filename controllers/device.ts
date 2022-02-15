@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import DeviceModel from '../models/device';
+import UserModel from '../models/user';
 import { generateDeviceToken } from '../util/auth.util';
 
 export const getDevices = async (req: Request, res: Response) => {
@@ -30,8 +31,8 @@ export const createDevice = async (req: Request, res: Response) => {
     try {
         const {name, mac, type } = req.body;//TODO: handle device Type
         const {userId} = res.locals.jwtPayload;
-        const clientExists = await DeviceModel.findOne({ _id: userId });
-        if (clientExists) return res.status(400).json({ msg: 'User id doesn\'t exists.' });
+        const clientExists = await UserModel.findOne({ _id: userId });
+        if (!clientExists) return res.status(400).json({ msg: 'User id doesn\'t exists.' });
         const deviceToken = await generateDeviceToken(32);
         const deviceDocument = new DeviceModel({
             userId,

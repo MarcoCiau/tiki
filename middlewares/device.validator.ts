@@ -30,10 +30,15 @@ export const mongoIdRule = () => {
 export const updateRules = () => {
     return (
         [
+            body('token')
+                .trim()
+                .isLength({ min: 64, max: 64 })
+                .optional(),
             body('name')
                 .exists()
                 .notEmpty()
-                .trim(),
+                .trim()
+                .optional(),
             body('mac')
                 .exists()
                 .notEmpty()
