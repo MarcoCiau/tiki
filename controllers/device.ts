@@ -29,7 +29,7 @@ export const getDevice = async (req: Request, res: Response) => {
 
 export const createDevice = async (req: Request, res: Response) => {
     try {
-        const {name, mac, type } = req.body;//TODO: handle device Type
+        const {name, mac} = req.body;
         const {userId} = res.locals.jwtPayload;
         const clientExists = await UserModel.findOne({ _id: userId });
         if (!clientExists) return res.status(400).json({ msg: 'User id doesn\'t exists.' });
