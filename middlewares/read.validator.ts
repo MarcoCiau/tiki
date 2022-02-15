@@ -6,6 +6,10 @@ const isValidTimestamp: CustomValidator = value => {
     return (new Date(value * 1000)).getTime() > 0;
 }
 
+let validateArrayType: CustomValidator = value => {
+    return (Array.isArray(value) && value.length >= 3 && value.length <= 7);
+}
+
 let validateSensorType: CustomValidator = value => {
     return (Object.values(sensorType).includes(value))
 }
@@ -54,14 +58,13 @@ export const createRules = () => {
             body('timestamp')
                 .custom(isValidTimestamp),
             body('metadata')
-                .notEmpty()
-                .isObject(),
-            body('metadata.type')
+                .custom(validateArrayType),
+            body('metadata.*.type')
                 .custom(validateSensorType),
-            body('metadata.value')
+            body('metadata.*.value')
                 .notEmpty()
                 .isNumeric(),
-            body('metadata.unit')
+            body('metadata.*.unit')
                 .custom(validateUnitType),
         ]
     )

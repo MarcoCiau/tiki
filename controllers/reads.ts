@@ -37,6 +37,7 @@ export const createRead = async (req: Request, res: Response) => {
         const { token, timestamp, metadata } = req.body;
         const deviceExists = await DeviceModel.findOne({ token });
         if (!deviceExists) {
+            console.log( 'Device doesn\'t exists.');
             return res.status(400).json({ msg: 'Device doesn\'t exists.' });
         }
         const readDocument = new ReadsModel({
@@ -44,8 +45,8 @@ export const createRead = async (req: Request, res: Response) => {
             timestamp: new Date(timestamp * 1000),
             metadata
         });
-        const result = await readDocument.save();
-        res.status(200).json({ msg: 'success', read: result });
+        await readDocument.save();
+        res.status(200).json({ msg: 'success'});
     } catch (error) {
         console.log('Create Device failed.', error);
         res.status(500).json({ msg: 'something went wrong.' })
