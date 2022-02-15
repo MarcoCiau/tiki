@@ -5,8 +5,10 @@
   "main": "index.js",
   "scripts": {
     "compile": "tsc",
+    "postinstall": "tsc",
     "start": "node dist/app.js",
-    "test": "nodemon dist/app.js"
+    "test": "nodemon dist/app.js",
+    "watch-ts": "tsc -w"
   },
   "repository": {
     "type": "git",
