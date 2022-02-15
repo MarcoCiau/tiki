@@ -11,7 +11,7 @@ interface sensorData {
 interface Reads {
     deviceId: Types.ObjectId,
     timestamp: Date,
-    metadata: sensorData
+    metadata: sensorData[]
 }
 
 const readSchema: Schema<Reads> = new Schema({
@@ -23,7 +23,7 @@ const readSchema: Schema<Reads> = new Schema({
     timestamp: {
         type: Date
     },
-    metadata: new Schema<sensorData>({
+    metadata: [new Schema<sensorData>({
         type: {
             type: String,
             default: sensorType.curr1,
@@ -38,7 +38,7 @@ const readSchema: Schema<Reads> = new Schema({
             default: unitType.current,
             required: true
         }
-    })
+    })]
 });
 
 
