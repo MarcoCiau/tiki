@@ -2,10 +2,6 @@ import { body, param, query, validationResult, Result, CustomValidator, checkSch
 import { Request, Response } from 'express';
 import { sensorType, unitType } from '../util/read.types';
 
-const isValidTimestamp: CustomValidator = value => {
-    return (new Date(value * 1000)).getTime() > 0;
-}
-
 let validateArrayType: CustomValidator = value => {
     return (Array.isArray(value) && value.length >= 3 && value.length <= 7);
 }
@@ -56,7 +52,8 @@ export const createRules = () => {
             body('token')
                 .isLength({ min: 64, max: 64 }),
             body('timestamp')
-                .custom(isValidTimestamp),
+                .notEmpty()
+                .isNumeric(),
             body('metadata')
                 .custom(validateArrayType),
             body('metadata.*.type')
