@@ -42,7 +42,7 @@ export const createRead = async (req: Request, res: Response) => {
         }
         const readDocument = new ReadsModel({
             deviceId: deviceExists._id,
-            timestamp: new Date(timestamp * 1000),
+            timestamp: (timestamp === 0 ? Date.now() : new Date(timestamp * 1000)),
             metadata
         });
         await readDocument.save();
