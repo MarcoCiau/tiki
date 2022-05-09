@@ -22,6 +22,15 @@ export const result = (req: Request, res: Response, next: any) => {
     next();
 };
 
+export const refreshTokendRules = () => {
+    return (
+        [
+            body('refreshToken')
+                .notEmpty()
+        ]
+    )
+};
+
 export const validateJWT = async (req: Request, res: Response, next: any) => {
     try {
         let token = req.header('x-token');
