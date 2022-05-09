@@ -62,7 +62,7 @@ export const generateAccessToken = async (userId: string) => {
 };
 
 export const generateRefreshToken = async (userId: string) => {
-    return generateJWT(userId, config.REFRESH_TOKEN_KEY, '60000');
+    return generateJWT(userId, config.REFRESH_TOKEN_KEY, '30d');
 };
 
 export const verifyAccessToken = async (token: string) => {
