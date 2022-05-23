@@ -45,7 +45,12 @@ export const createRead = async (req: Request, res: Response) => {
             timestamp: (timestamp === 0 ? Date.now() : new Date(timestamp * 1000)),
             metadata
         });
-        await readDocument.save();
+        //update device status
+        deviceExists.connected = true;
+        deviceExists.lastConnected = new Date();
+        deviceExists.lastReport = new Date();
+        // save reads and update device
+        await Promise.all([readDocument.save(), deviceExists.save()]);
         res.status(200).json({ msg: 'success'});
     } catch (error) {
         console.log('Create Device failed.', error);
