@@ -5,6 +5,7 @@ import cors from 'cors';
 import authRoutes from '../routes/auth';
 import deviceRoutes from '../routes/device';
 import readsRoutes from '../routes/reads';
+import initDeviceService from '../services/deviceService';
 class Server {
     private app: Application;
     private port: string;
@@ -41,6 +42,7 @@ class Server {
             await connectDB();
             console.log('DB Connected!');
             this.listen();
+            initDeviceService();
         } catch (error) {
             console.log('Init Server Failed : ', error);
         }
