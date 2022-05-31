@@ -6,6 +6,7 @@ import authRoutes from '../routes/auth';
 import deviceRoutes from '../routes/device';
 import readsRoutes from '../routes/reads';
 import initDeviceService from '../services/deviceService';
+import initReadService from '../services/readService';
 class Server {
     private app: Application;
     private port: string;
@@ -43,6 +44,7 @@ class Server {
             console.log('DB Connected!');
             this.listen();
             initDeviceService();
+            initReadService();
         } catch (error) {
             console.log('Init Server Failed : ', error);
         }
