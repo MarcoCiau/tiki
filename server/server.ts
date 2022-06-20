@@ -2,7 +2,7 @@ import express, { Application } from 'express';
 import helmet from 'helmet';
 import mongoSanatize from 'express-mongo-sanitize';
 import envConfig from '../config/config';
-import connectDB from '../config/db';
+import { connectDB } from '../config/db';
 import cors from 'cors';
 import authRoutes from '../routes/auth';
 import deviceRoutes from '../routes/device';
@@ -52,6 +52,10 @@ class Server {
         });
     }
 
+    getApp() {
+        return this.app;
+    }
+    
     async init() {
         try {
             await connectDB();
@@ -63,5 +67,5 @@ class Server {
         }
     }
 }
-
-export default Server;
+const server = new Server();
+export default server;
