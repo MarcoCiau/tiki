@@ -15,6 +15,7 @@ class Server {
         this.port = envConfig.SERVER_PORT || '8000';
         this.middlewares();
         this.routes();
+        this.notFoundMiddleware();
     }
 
     middlewares() {
@@ -26,6 +27,14 @@ class Server {
         this.app.use(express.json());
         /* parse application/x-www-form-urlencoded requests. Only parse string or arrays*/
         this.app.use(express.urlencoded({ extended: false }));
+
+    }
+
+    notFoundMiddleware() {
+        /* 404 Not-found middleware */
+        this.app.use((req, res, next) => {
+            res.status(404).send("Protected/Not found resource!")
+        })
     }
 
     routes() {
