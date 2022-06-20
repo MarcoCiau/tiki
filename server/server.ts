@@ -1,4 +1,6 @@
 import express, { Application } from 'express';
+import helmet from 'helmet';
+import mongoSanatize from 'express-mongo-sanitize';
 import envConfig from '../config/config';
 import connectDB from '../config/db';
 import cors from 'cors';
@@ -14,15 +16,28 @@ class Server {
         this.port = envConfig.SERVER_PORT || '8000';
         this.middlewares();
         this.routes();
+        this.notFoundMiddleware();
     }
 
     middlewares() {
+        /* Helmet Security */
+        this.app.use(helmet());
         /* enable cors */
         this.app.use(cors());
         /* parse application/json requests*/
         this.app.use(express.json());
         /* parse application/x-www-form-urlencoded requests. Only parse string or arrays*/
         this.app.use(express.urlencoded({ extended: false }));
+        /* sanatizer for mogodb*/
+        this.app.use(mongoSanatize());
+
+    }
+
+    notFoundMiddleware() {
+        /* 404 Not-found middleware */
+        this.app.use((req, res, next) => {
+            res.status(404).send("Protected/Not found resource!")
+        })
     }
 
     routes() {
