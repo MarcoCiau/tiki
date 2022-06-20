@@ -1,4 +1,5 @@
 import express, { Application } from 'express';
+import helmet from 'helmet';
 import envConfig from '../config/config';
 import connectDB from '../config/db';
 import cors from 'cors';
@@ -17,6 +18,8 @@ class Server {
     }
 
     middlewares() {
+        /* Helmet Security */
+        this.app.use(helmet());
         /* enable cors */
         this.app.use(cors());
         /* parse application/json requests*/
