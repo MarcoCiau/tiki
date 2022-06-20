@@ -1,5 +1,6 @@
 import express, { Application } from 'express';
 import helmet from 'helmet';
+import mongoSanatize from 'express-mongo-sanitize';
 import envConfig from '../config/config';
 import connectDB from '../config/db';
 import cors from 'cors';
@@ -27,6 +28,8 @@ class Server {
         this.app.use(express.json());
         /* parse application/x-www-form-urlencoded requests. Only parse string or arrays*/
         this.app.use(express.urlencoded({ extended: false }));
+        /* sanatizer for mogodb*/
+        this.app.use(mongoSanatize());
 
     }
 
