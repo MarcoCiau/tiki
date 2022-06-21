@@ -1,5 +1,10 @@
-import { body, param, validationResult, Result } from 'express-validator';
+import { body, CustomValidator, param, validationResult, Result } from 'express-validator';
 import { Request, Response } from 'express';
+import { deviceType } from '../util/read.types';
+
+let validateDeviceType: CustomValidator = value => {
+    return (value === deviceType.singlePhase || value === deviceType.threePhase);
+}
 
 export const createRules = () => {
     return (
@@ -14,6 +19,7 @@ export const createRules = () => {
             body('type')
                 .notEmpty()
                 .isNumeric()
+                .custom(validateDeviceType)
         ]
     )
 };
@@ -49,6 +55,7 @@ export const updateRules = () => {
                 .exists()
                 .notEmpty()
                 .isNumeric()
+                .custom(validateDeviceType)
                 .optional(),
             body('connected')
                 .exists()
