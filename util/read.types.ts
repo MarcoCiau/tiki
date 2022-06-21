@@ -8,6 +8,11 @@ export  enum sensorType {
     totalKwh = "TOTAL_ACTIVE_KWH"
 }
 
+export enum  deviceType {
+    singlePhase = 1,
+    threePhase
+}
+
 export  enum unitType {
     current = "A",
     voltage = "V",
