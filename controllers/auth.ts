@@ -3,8 +3,27 @@ import UserModel from '../models/user';
 import RefreshTokenModel from '../models/refreshToken';
 import { hashPassword, generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../util/auth.util';
 
+const generateTokens = async (userId: string) => {
+    try {
+        /* Generate Refresh & Access Tokens */
+        const [refreshToken, accessToken] = await Promise.all([generateRefreshToken(userId), generateAccessToken(userId)]);
+        /* Check if current refresh token exists */
+        const refreshTokenExists = await RefreshTokenModel.findOne({ user: userId });
+        if (refreshTokenExists) refreshTokenExists.deleteOne();
+        /* Create & Save new Refresh Token */
+        const refreshTokenDoc = new RefreshTokenModel({
+            user: userId,
+            refreshToken: refreshToken
+        });
+        const newRefreshToken = await refreshTokenDoc.save();
+        return Promise.resolve([accessToken, newRefreshToken.refreshToken]);
+    } catch (error) {
+        return Promise.reject("Generating Tokens failed");
+    }
+}
+
 export const signup = async (req: Request, res: Response) => {
-    const { email, password } = req.body;
+    const { name, email, password } = req.body;
     try {
         /* Verify User */
         const userExists = await UserModel.findOne({ email });
@@ -13,12 +32,15 @@ export const signup = async (req: Request, res: Response) => {
         const hashedPassword: string = await hashPassword(password);
         /* Create & Save New User */
         const userDoc = new UserModel({
+            name,
             email,
             password: hashedPassword
         });
-        const result = await userDoc.save();     
-        /* Send Response */       
-        res.status(200).json({ msg: 'success', user: result });
+        const result = await userDoc.save();
+        /* Generate Refresh & Access Tokens */
+        const [accessToken, refreshToken] = await generateTokens(userDoc._id);
+        /* Send Response */
+        res.status(200).json({ msg: 'success', user: result, accessToken, refreshToken });
     } catch (error) {
         console.log('Signing up user failed.', error);
         res.status(500).json({ msg: 'something went wrong.' })
@@ -37,18 +59,9 @@ export const signin = async (req: Request, res: Response) => {
             return res.status(400).json({ msg: 'Invalid Password.' });
         }
         /* Generate Refresh & Access Tokens */
-        const [refreshToken, accessToken] = await Promise.all([generateRefreshToken(userExists._id), generateAccessToken(userExists._id)]);
-        /* Check if current refresh token exists */
-        const refreshTokenExists = await RefreshTokenModel.findOne({user: userExists._id});
-        if (refreshTokenExists) refreshTokenExists.deleteOne();
-        /* Create & Save new Refresh Token */
-        const refreshTokenDoc = new RefreshTokenModel({
-            user: userExists._id,
-            refreshToken: refreshToken
-        });
-        const newRefreshToken = await refreshTokenDoc.save();  
-        /* Send Response */      
-        res.status(200).json({ msg: 'success', user: userExists, accessToken, refreshToken:newRefreshToken.refreshToken });
+        const [accessToken, refreshToken] = await generateTokens(userExists._id);
+        /* Send Response */
+        res.status(200).json({ msg: 'success', user: userExists, accessToken, refreshToken});
     } catch (error) {
         console.log('Signing in user failed.', error);
         res.status(500).json({ msg: 'something went wrong.' })

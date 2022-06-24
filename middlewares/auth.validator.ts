@@ -4,6 +4,23 @@ import { verifyAccessToken } from '../util/auth.util';
 export const rules = () => {
     return (
         [
+            body('name')
+                .notEmpty()
+                .isString()
+                .trim(),
+            body('password')
+                .isLength({ min: 8 })
+                .trim(),
+            body('email')
+                .isEmail()
+                .normalizeEmail()
+        ]
+    )
+};
+
+export const signinRules = () => {
+    return (
+        [
             body('password')
                 .isLength({ min: 8 })
                 .trim(),

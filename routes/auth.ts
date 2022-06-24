@@ -9,6 +9,6 @@ import * as authController from '../controllers/auth';
 import * as authValidator from '../middlewares/auth.validator';
 const router = Router();
 router.post('/signup', limiter, authValidator.rules(), authValidator.result, authController.signup);
-router.post('/signin', limiter, authValidator.rules(), authValidator.result, authController.signin);
+router.post('/signin', limiter, authValidator.signinRules(), authValidator.result, authController.signin);
 router.post('/refreshToken', limiter, authValidator.refreshTokendRules(), authValidator.result, authController.refreshToken);
 export default router;
