@@ -1,6 +1,6 @@
 import request from "../config/testConfig";
-import {connectDB, disconnectDB } from "../config/db";
-const authURLBase : string = "/api/v1/auth";
+import { connectDB, disconnectDB } from "../config/db";
+const authURLBase: string = "/api/v1/auth";
 let accessToken: string = "*";
 let refreshToken: string = "*";
 beforeAll(() => jest.setTimeout(90 * 1000));
@@ -20,7 +20,8 @@ describe("User Signup Test", () => {
             .send({
                 name: "",
                 email: "user@mail.com",
-                password: "123"
+                password: "123",
+                timezone: "America/Merida"
             });
         expect(response.statusCode).toBe(400);
     });
@@ -31,7 +32,8 @@ describe("User Signup Test", () => {
             .send({
                 name: "user_test",
                 email: "usermail.com",
-                password: "123456789"
+                password: "123456789",
+                timezone: "America/Merida"
             });
         expect(response.statusCode).toBe(400);
     });
@@ -42,7 +44,20 @@ describe("User Signup Test", () => {
             .send({
                 name: "user test",
                 email: "user@mail.com",
-                password: "123"
+                password: "123",
+                timezone: "America/Merida"
+            });
+        expect(response.statusCode).toBe(400);
+    });
+
+    test("Bad Timezone value - It should respond with an bad request", async () => {
+        const response = await request
+            .post(authURLBase + "/signup")
+            .send({
+                name: "user test",
+                email: "user@mail.com",
+                password: "123",
+                timezone: 3
             });
         expect(response.statusCode).toBe(400);
     });
@@ -59,7 +74,7 @@ describe("User Signup Test", () => {
             .post(authURLBase + "/signup")
             .send({
                 name: "user test",
-                email: "testUser4@email.com",
+                email: "testuser3@email.com",
                 password: "qwertyui8"
             });
         expect(response.statusCode).toBe(200);
@@ -73,7 +88,7 @@ describe("User Signup Test", () => {
             .post(authURLBase + "/signup")
             .send({
                 name: "user test",
-                email: "testUser4@email.com",
+                email: "testuser3@email.com",
                 password: "qwertyui"
             });
         expect(response.statusCode).toBe(400);
@@ -123,7 +138,7 @@ describe("User Signin Test", () => {
         const response = await request
             .post(authURLBase + "/signin")
             .send({
-                email: "testUser3@email.com",
+                email: "testuser3@email.com",
                 password: "qwertyui8"
             });
         expect(response.statusCode).toBe(200);
@@ -139,10 +154,10 @@ describe("User Refresh Token - Test ", () => {
         const response = await request
             .post(authURLBase + "/signin")
             .send({
-                email: "testUser3@email.com",
+                email: "testuser3@email.com",
                 password: "qwertyui8"
             });
-            
+
         expect(response.statusCode).toBe(200);
         expect(response.body.msg).toBe("success");
         expect(response.body.accessToken).not.toBeNull();

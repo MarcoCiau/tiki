@@ -2,7 +2,7 @@ import request from "../config/testConfig";
 import { connectDB, disconnectDB } from "../config/db";
 const deviceURLBase: string = "/api/v1/device";
 let accessToken: string = "*";
-
+beforeAll(() => jest.setTimeout(90 * 1000));
 describe("DB Connection", () => {
     test("It should return true if database is connected successfully", async () => {
         const db = await connectDB();
@@ -17,7 +17,7 @@ describe("Creating a new device - Test ", () => {
         const response = await request
             .post("/api/v1/auth/signin")
             .send({
-                email: "testUser3@email.com",
+                email: "testuser3@email.com",
                 password: "qwertyui8"
             });
 
