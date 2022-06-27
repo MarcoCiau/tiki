@@ -4,6 +4,7 @@ import mongoSanatize from 'express-mongo-sanitize';
 import envConfig from '../config/config';
 import { connectDB } from '../config/db';
 import cors from 'cors';
+import errorHandlerMiddleware from '../middlewares/errorHandler';
 import authRoutes from '../routes/auth';
 import deviceRoutes from '../routes/device';
 import readsRoutes from '../routes/reads';
@@ -17,6 +18,7 @@ class Server {
         this.middlewares();
         this.routes();
         this.notFoundMiddleware();
+        this.errorHandlerMiddleware();
     }
 
     middlewares() {
@@ -40,6 +42,11 @@ class Server {
         })
     }
 
+    errorHandlerMiddleware() {
+        /* error handler */
+        this.app.use(errorHandlerMiddleware);
+    }
+    
     routes() {
         this.app.use('/api/v1/auth', authRoutes);
         this.app.use('/api/v1/device', deviceRoutes);
@@ -55,7 +62,7 @@ class Server {
     getApp() {
         return this.app;
     }
-    
+
     async init() {
         try {
             await connectDB();
