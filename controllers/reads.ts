@@ -1,44 +1,45 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
+import { StatusCodes } from "http-status-codes";
 import ReadsModel from '../models/reads';
 import DeviceModel from '../models/device';
 import { executeReadsQuery } from '../util/db.queries';
+import { BadRequestError, NotFoundError } from '../errors';
 
-export const getReads = async (req: Request, res: Response) => {
+export const getReads = async (req: Request, res: Response, next: NextFunction) => {
 
     try {
         const { query = "", from = 0, limit = 5, sort = 1 } = req.query;
         const reads: any = await executeReadsQuery(query.toString(), Number(from), Number(limit), Number(sort));
         if (!reads) {
-            res.status(400).json({ msg: 'Get all Reads failed.', })
+            throw new BadRequestError("Get Reads by pagination failed.")
         }
-        res.json({ msg: 'success', count: reads.length, reads });
+        res.status(StatusCodes.OK).json({ msg: 'success', count: reads.length, reads });
     } catch (error) {
         console.log('Get all Reads failed.', error);
-        res.status(500).json({ msg: 'something went wrong.', error })
+        next(error);
     }
 }
 
-export const getRead = async (req: Request, res: Response) => {
+export const getRead = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
         const result = await ReadsModel.findOne({ _id: id });
         if (!result) {
-            return res.status(400).json({ msg: 'Read doesn\'t exists' });
+            throw new NotFoundError(`No Read with id :${id}`);
         }
-        res.status(200).json({ msg: 'success', device: result });
+        res.status(StatusCodes.OK).json({ msg: 'success', device: result });
     } catch (error) {
         console.log('Get client failed.', error);
-        res.status(500).json({ msg: 'something went wrong.' })
+        next(error);
     }
 }
 
-export const createRead = async (req: Request, res: Response) => {
+export const createRead = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { token, timestamp, metadata } = req.body;
         const deviceExists = await DeviceModel.findOne({ token });
         if (!deviceExists) {
-            console.log( 'Device doesn\'t exists.');
-            return res.status(400).json({ msg: 'Device doesn\'t exists.' });
+            throw new NotFoundError(`No Device with token :${token}`);
         }
         const readDocument = new ReadsModel({
             deviceId: deviceExists._id,
@@ -51,23 +52,23 @@ export const createRead = async (req: Request, res: Response) => {
         deviceExists.lastReport = new Date();
         // save reads and update device
         await Promise.all([readDocument.save(), deviceExists.save()]);
-        res.status(200).json({ msg: 'success'});
+        res.status(StatusCodes.OK).json({ msg: 'success'});
     } catch (error) {
         console.log('Create Device failed.', error);
-        res.status(500).json({ msg: 'something went wrong.' })
+        next(error);
     }
 }
 
-export const deleteRead = async (req: Request, res: Response) => {
+export const deleteRead = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
         const result = await ReadsModel.findByIdAndDelete({ _id: id });
         if (!result) {
-            return res.status(400).json({ msg: 'Read doesn\'t exists' });
+            throw new NotFoundError(`No Read with id :${id}`);
         }
-        res.status(200).json({ msg: 'success', device: result });
+        res.status(StatusCodes.OK).json({ msg: 'success', device: result });
     } catch (error) {
         console.log('Delete Read failed.', error);
-        res.status(500).json({ msg: 'something went wrong.' });
+        next(error);
     }
 }
