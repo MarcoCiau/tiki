@@ -6,15 +6,11 @@ const errorHandlerMiddleware = (
     req: Request,
     res: Response,
     next: NextFunction) => {
-
-        console.log(err);
-        
     const defaultError = {
         statusCode: (err instanceof CustomAPIError) ? err.statusCode : StatusCodes.INTERNAL_SERVER_ERROR,
         msg: (err instanceof CustomAPIError) ? err.message : 'Something went wrong, try again later',
         moreInfo: (err instanceof CustomAPIError) ? err.moreInfo : [],
     }
-
     res.status(defaultError.statusCode).json({ msg: defaultError.msg, moreInfo: defaultError.moreInfo })
 }
 
