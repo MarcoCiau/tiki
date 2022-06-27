@@ -13,7 +13,12 @@ export const rules = () => {
                 .trim(),
             body('email')
                 .isEmail()
-                .normalizeEmail()
+                .normalizeEmail(),
+            body('timezone')
+                .exists()
+                .isString()
+                .trim()
+                .optional(),
         ]
     )
 };
@@ -30,6 +35,28 @@ export const signinRules = () => {
         ]
     )
 };
+
+export const updateRules = () => {
+    return (
+        [
+            body('name')
+                .notEmpty()
+                .isString()
+                .trim()
+                .optional(),
+            body('email')
+                .notEmpty()
+                .isEmail()
+                .normalizeEmail()
+                .optional(),
+            body('timezone')
+                .notEmpty()
+                .isString()
+                .trim()
+                .optional(),
+        ]
+    )
+}
 
 export const result = (req: Request, res: Response, next: any) => {
     const errors: Result = validationResult(req);
