@@ -42,18 +42,15 @@ export const updateRules = () => {
             body('name')
                 .notEmpty()
                 .isString()
-                .trim()
-                .optional(),
+                .trim(),
             body('email')
                 .notEmpty()
                 .isEmail()
-                .normalizeEmail()
-                .optional(),
+                .normalizeEmail(),
             body('timezone')
                 .notEmpty()
                 .isString()
-                .trim()
-                .optional(),
+                .trim(),
         ]
     )
 }

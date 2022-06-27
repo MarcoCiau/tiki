@@ -11,4 +11,5 @@ const router = Router();
 router.post('/signup', limiter, authValidator.rules(), authValidator.result, authController.signup);
 router.post('/signin', limiter, authValidator.signinRules(), authValidator.result, authController.signin);
 router.post('/refreshToken', limiter, authValidator.refreshTokendRules(), authValidator.result, authController.refreshToken);
+router.patch('/user', authValidator.validateJWT, authValidator.updateRules(), authValidator.result, authController.update);
 export default router;

@@ -61,9 +61,26 @@ export const signin = async (req: Request, res: Response) => {
         /* Generate Refresh & Access Tokens */
         const [accessToken, refreshToken] = await generateTokens(userExists._id);
         /* Send Response */
-        res.status(200).json({ msg: 'success', user: userExists, accessToken, refreshToken});
+        res.status(200).json({ msg: 'success', user: userExists, accessToken, refreshToken });
     } catch (error) {
         console.log('Signing in user failed.', error);
+        res.status(500).json({ msg: 'something went wrong.' })
+    }
+}
+
+export const update = async (req: Request, res: Response) => {
+
+    try {
+        const body = req.body;
+        const { userId } = res.locals.jwtPayload;
+        /* Verify and update User */
+        const result = await UserModel.findOneAndUpdate({ _id: userId }, { ...body }, { new: true });
+        if (!result) {
+            return res.status(400).json({ msg: 'User doesn\'t exists' });
+        }
+        res.status(200).json({ msg: 'success', user: result });
+    } catch (error) {
+        console.log('Updating user failed.', error);
         res.status(500).json({ msg: 'something went wrong.' })
     }
 }
