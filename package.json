@@ -7,7 +7,7 @@
     "compile": "tsc",
     "postinstall": "tsc",
     "start": "node dist/app.js",
-    "run": "nodemon dist/app.js",
+    "dev": "nodemon dist/app.js",
     "test": "jest ./dist/__test__",
     "watch-ts": "tsc -w"
   },
