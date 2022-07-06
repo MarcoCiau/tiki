@@ -8,6 +8,7 @@ import crypto from "crypto";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import config from '../config/config';
+import { BadRequestError } from "../errors";
 
 const generateJWT = async (userId: string, privateKey: string, expires: string) => {
     return new Promise<string>((resolve, reject) => {
@@ -23,11 +24,10 @@ const generateJWT = async (userId: string, privateKey: string, expires: string) 
     })
 };
 
-const verifyJWT = (token: string, privateKey: string) => {
+const verifyJWT = (token: string, privateKey: string): Promise<string | jwt.JwtPayload | jwt.VerifyErrors | undefined> => {
     return new Promise((resolve, reject) => {
         jwt.verify(token, privateKey, (err, decoded) => {
             if (err) {
-                console.log("Verify Token Error: ", err);
                 reject(err);
             }
             resolve(decoded);
@@ -62,15 +62,37 @@ export const generateAccessToken = async (userId: string) => {
 };
 
 export const generateRefreshToken = async (userId: string) => {
-    return generateJWT(userId, config.REFRESH_TOKEN_KEY, '60000');
+    return generateJWT(userId, config.REFRESH_TOKEN_KEY, '30d');
 };
 
 export const verifyAccessToken = async (token: string) => {
-    return verifyJWT(token, config.ACCESS_TOKEN_KEY);
+    try {
+        const decoded = await verifyJWT(token, config.ACCESS_TOKEN_KEY);
+        return decoded;
+    } catch (error) {
+        let message = "";
+        if (error instanceof jwt.TokenExpiredError ||
+            error instanceof jwt.JsonWebTokenError ||
+            error instanceof jwt.NotBeforeError) {
+            message = `error: ${error.name}, msg: ${error.message} `;
+        }
+        throw new BadRequestError("Authentication Invalid", [message]);
+    }
 };
 
 export const verifyRefreshToken = async (token: string) => {
-    return verifyJWT(token, config.REFRESH_TOKEN_KEY);
+    try {
+        const decoded = await verifyJWT(token, config.REFRESH_TOKEN_KEY);
+        return decoded;
+    } catch (error) {
+        let message = "";
+        if (error instanceof jwt.TokenExpiredError ||
+            error instanceof jwt.JsonWebTokenError ||
+            error instanceof jwt.NotBeforeError) {
+            message = `error: ${error.name}, msg: ${error.message} `;
+        }
+        throw new BadRequestError("Authentication Invalid", [message]);
+    }
 };
 
 export const getUserIdFromToken = (token: string) => {

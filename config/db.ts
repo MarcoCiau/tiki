@@ -4,9 +4,18 @@ const connectDB = async (): Promise<any> => {
     const mongoDBUrl: string = config.DB_URL || "";
     await mongoose.connect(mongoDBUrl);
     mongoose.connection.on('error', err => {
-        Promise.reject(err);
+        return Promise.reject(err);
     });
-    Promise.resolve(true);
+    return Promise.resolve(true);
 };
 
-export default connectDB;
+const disconnectDB = async () : Promise <any> => {
+    try {
+        await mongoose.disconnect();
+        return Promise.resolve(true);
+    } catch (error) {
+        return Promise.resolve(false);
+    }
+}
+
+export {connectDB, disconnectDB};
