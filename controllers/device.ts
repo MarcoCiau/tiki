@@ -4,11 +4,61 @@ import DeviceModel from '../models/device';
 import UserModel from '../models/user';
 import { generateDeviceToken } from '../util/auth.util';
 import { NotFoundError } from '../errors';
-
+import { Types } from 'mongoose';
+interface deviceQueryObj {
+    userId : Types.ObjectId,
+    name?: unknown,
+    connected?: boolean
+};
 export const getDevices = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const result = await DeviceModel.find();
-        res.status(StatusCodes.OK).json({ msg: 'success', devices: result });
+        const { userId } = res.locals.jwtPayload;
+        console.log(req.query);
+        
+        const { status, search, sort } = req.query;
+        //setup query
+        
+        let deviceQuery: deviceQueryObj = {
+            userId,
+        }
+
+        if (status && status == "connected")
+        {
+          deviceQuery.connected = true;
+        }
+        if (status && status == "disconnected")
+        {
+          deviceQuery.connected = false;
+        }
+        if (search) {
+          deviceQuery.name = { $regex: search, $options: 'i' }
+        }
+    
+        let result = DeviceModel.find(deviceQuery);
+    
+        // chain sort conditions
+        if (sort && sort === 'latest') {
+          result = result.sort('-createdAt')
+        }
+        if (sort && sort === 'oldest') {
+          result = result.sort('createdAt')
+        }
+        if (sort && sort === 'a-z') {
+          result = result.sort('name')
+        }
+        if (sort && sort === 'z-a') {
+          result = result.sort('-name')
+        }
+        // setup pagination
+        const page = Number(req.query.page) || 1;
+        const limit = Number(req.query.limit) || 10;
+        const skip = (page - 1) * limit; //10
+        result = result.skip(skip).limit(limit);
+        // execute query and count docs
+        const [devices, totalDevices] = await Promise.all([result, DeviceModel.countDocuments(deviceQuery)]);
+        const numOfPages = Math.ceil(totalDevices / limit);
+
+        res.status(StatusCodes.OK).json({msg: 'success', devices, totalDevices, numOfPages});
     } catch (error) {
         console.log('Get all Devices failed.', error);
         next(error);
