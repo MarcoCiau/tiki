@@ -13,8 +13,6 @@ interface deviceQueryObj {
 export const getDevices = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { userId } = res.locals.jwtPayload;
-        console.log(req.query);
-        
         const { status, search, sort } = req.query;
         //setup query
         
