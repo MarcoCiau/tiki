@@ -18,10 +18,12 @@ const readSchema: Schema<Reads> = new Schema({
     deviceId: {
         type: Schema.Types.ObjectId,
         required: true,
-        ref: "Devices"
+        ref: "Devices",
+        index: true,
     },
     timestamp: {
-        type: Date
+        type: Date,
+        index: true,
     },
     metadata: [new Schema<sensorData>({
         type: {
