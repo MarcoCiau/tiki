@@ -1,19 +1,76 @@
 import { Request, Response, NextFunction } from 'express';
+import mongoose from 'mongoose';
 import { StatusCodes } from "http-status-codes";
 import ReadsModel from '../models/reads';
 import DeviceModel from '../models/device';
-import { executeReadsQuery } from '../util/db.queries';
+import { aggregateReads, executeReadsQuery } from '../util/db.queries';
 import { BadRequestError, NotFoundError } from '../errors';
+import { Types } from 'mongoose';
+import { sensorType, unitType } from '../util/read.types';
+
+interface readsQueryObj {
+    deviceId: Types.ObjectId,
+    type?: string,
+    startDate: Date,
+    endDate: Date
+}
+
+interface sensorDataset {
+    timestamp: Date | number,
+    value: number,
+}
+interface readsGetObj {
+    deviceId: Types.ObjectId,
+    pf?: number,
+    freq?: number,
+    kw?: number,
+    kwh?: number,
+    volt?: number,
+    amp?: number,
+    current?: sensorDataset[],
+    voltage?: sensorDataset[],
+    activeKwh?: sensorDataset[]
+}
 
 export const getReads = async (req: Request, res: Response, next: NextFunction) => {
 
     try {
-        const { query = "", from = 0, limit = 5, sort = 1 } = req.query;
-        const reads: any = await executeReadsQuery(query.toString(), Number(from), Number(limit), Number(sort));
-        if (!reads) {
-            throw new BadRequestError("Get Reads by pagination failed.")
+        const { type, deviceId } = req.query;
+        let idToSearch = new mongoose.Types.ObjectId(deviceId as string);
+        let readQuery: readsQueryObj = {
+            deviceId: idToSearch,
+            startDate: new Date(),
+            endDate: new Date()
+        };
+
+        if (type && type === "lastHour") {
+            const startD = Math.round(new Date().getTime() / 1000);
+            const endD = startD - 3600000;
+
+            readQuery.startDate = new Date(startD);
+            readQuery.endDate = new Date(endD);
+            console.log(readQuery.startDate);
+            console.log(readQuery.endDate);
         }
-        res.status(StatusCodes.OK).json({ msg: 'success', count: reads.length, reads });
+        const reads :readsGetObj = {
+            deviceId: idToSearch
+        }
+        const [current, voltage, activeKwh] = await Promise.all([
+             aggregateReads(idToSearch, sensorType.curr1, readQuery.startDate, readQuery.endDate  ),
+             aggregateReads(idToSearch, sensorType.volt1, readQuery.startDate, readQuery.endDate  ),
+             aggregateReads(idToSearch, sensorType.totalKwh, readQuery.startDate, readQuery.endDate  )
+        ])
+        reads.current = current.map((sensor) => {
+            return sensor._id;
+        });
+        reads.voltage = voltage.map((sensor) => {
+            return sensor._id;
+        });
+        reads.activeKwh = activeKwh.map((sensor) => {
+            return sensor._id;
+        });
+
+        res.status(StatusCodes.OK).json({ msg: 'success', reads });
     } catch (error) {
         console.log('Get all Reads failed.', error);
         next(error);
@@ -52,7 +109,7 @@ export const createRead = async (req: Request, res: Response, next: NextFunction
         deviceExists.lastReport = new Date();
         // save reads and update device
         await Promise.all([readDocument.save(), deviceExists.save()]);
-        res.status(StatusCodes.OK).json({ msg: 'success'});
+        res.status(StatusCodes.OK).json({ msg: 'success' });
     } catch (error) {
         console.log('Create Device failed.', error);
         next(error);
