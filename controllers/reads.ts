@@ -35,6 +35,7 @@ export const getReads = async (req: Request, res: Response, next: NextFunction) 
         const reads :readsGetObj = {
             deviceId: idToSearch
         }
+
         const [current, voltage, activeKwh, frequencyTS, activePower, pf] = await Promise.all([
              aggregateReads(idToSearch, sensorType.curr1 ),
              aggregateReads(idToSearch, sensorType.volt1 ),
@@ -44,25 +45,46 @@ export const getReads = async (req: Request, res: Response, next: NextFunction) 
              aggregateReads(idToSearch, sensorType.powerFactor, 1 ),
         ])
 
-        reads.current = current.map((sensor) => {
-            return sensor._id;
-        });
-        reads.voltage = voltage.map((sensor) => {
-            return sensor._id;
-        });
-        reads.activeKwh = activeKwh.map((sensor) => {
-            return sensor._id;
-        });
-        reads.frequencyTS = frequencyTS.map((sensor) => {
-            return sensor._id;
-        });
-        /* Prepare Overview Data */
-        reads.pf= pf[0]._id.value;
-        reads.frequency= reads.frequencyTS[0].value;
-        reads.power= activePower[0]._id.value;
-        reads.energy= reads.activeKwh[0].value;
-        reads.lineCurrent = reads.current[0].value;
-        reads.lineVoltage = reads.voltage[0].value;
+        if (current.length === 0)
+        {
+            return res.status(StatusCodes.OK).json({ msg: 'success', reads: {},  });
+        }
+
+        console.log(activePower);
+        console.log(pf);
+        if (current)
+        {
+            reads.current = current.map((sensor) => {
+                return sensor._id;
+            });
+            reads.lineCurrent = reads.current[0].value;
+        }
+
+        if (voltage)
+        {
+            reads.voltage = voltage.map((sensor) => {
+                return sensor._id;
+            });
+            reads.lineVoltage = reads.voltage[0].value;
+        }
+
+        if (activeKwh)
+        {
+            reads.activeKwh = activeKwh.map((sensor) => {
+                return sensor._id;
+            });
+            reads.energy= reads.activeKwh[0].value;
+        }
+        if (frequencyTS)
+        {
+            reads.frequencyTS = frequencyTS.map((sensor) => {
+                return sensor._id;
+            });
+            reads.frequency= reads.frequencyTS[0].value;
+        }
+        if (pf) reads.pf= pf[0]._id.value;
+        if (activePower)reads.power= activePower[0]._id.value;
+        
         /* Send Response*/
         res.status(StatusCodes.OK).json({ msg: 'success', reads,  });
     } catch (error) {
