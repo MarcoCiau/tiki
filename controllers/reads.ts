@@ -22,11 +22,11 @@ interface sensorDataset {
 interface readsGetObj {
     deviceId: Types.ObjectId,
     pf?: number,
-    freq?: number,
-    kw?: number,
-    kwh?: number,
-    volt?: number,
-    amp?: number,
+    frequency?: number,
+    power?: number,
+    energy?: number,
+    lineVoltage?: number,
+    lineCurrent?: number,
     current?: sensorDataset[],
     voltage?: sensorDataset[],
     activeKwh?: sensorDataset[]
@@ -60,6 +60,7 @@ export const getReads = async (req: Request, res: Response, next: NextFunction) 
              aggregateReads(idToSearch, sensorType.volt1, readQuery.startDate, readQuery.endDate  ),
              aggregateReads(idToSearch, sensorType.totalKwh, readQuery.startDate, readQuery.endDate  )
         ])
+        console.log(current);
         reads.current = current.map((sensor) => {
             return sensor._id;
         });
@@ -69,8 +70,15 @@ export const getReads = async (req: Request, res: Response, next: NextFunction) 
         reads.activeKwh = activeKwh.map((sensor) => {
             return sensor._id;
         });
-
-        res.status(StatusCodes.OK).json({ msg: 'success', reads });
+        /* Prepare Overview Data */
+        reads.pf= 0.98;
+        reads.frequency= 59.70;
+        reads.power= 0.00;
+        reads.energy= reads.activeKwh[0].value;
+        reads.lineCurrent = reads.current[0].value;
+        reads.lineVoltage = reads.voltage[0].value;
+        /* Send Response*/
+        res.status(StatusCodes.OK).json({ msg: 'success', reads,  });
     } catch (error) {
         console.log('Get all Reads failed.', error);
         next(error);
