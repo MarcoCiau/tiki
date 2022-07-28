@@ -28,13 +28,10 @@ export const aggregateReads = async (device: Types.ObjectId, sensor: sensorType,
     return await ReadsModel.aggregate([
         { $unwind: "$metadata" },
         { $match: { $and: [{ "deviceId": device }, { "metadata.type": sensor }] } },
-        // { $match: { $and: [{ "deviceId": device }, { "metadata.type": sensor }, { timestamp: { $gte: new Date('2022-07-15T23:49:50.000Z'), $lte: new Date('2022-07-15T23:59:50.000Z') } }] } },
-        { $limit : 120 },
-        { $sort: {timestamp: -1}},
         {
-            $group: {
-                _id: { timestamp: "$timestamp",value: "$metadata.value" },
-            },
+            $group: {_id: {timestamp: "$timestamp",value: "$metadata.value"}},
         },
+        { $sort : { "_id.timestamp" : -1 } },
+        { $limit : 50 },
     ])
 }
