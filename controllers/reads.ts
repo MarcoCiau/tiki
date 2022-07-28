@@ -29,7 +29,8 @@ interface readsGetObj {
     lineCurrent?: number,
     current?: sensorDataset[],
     voltage?: sensorDataset[],
-    activeKwh?: sensorDataset[]
+    activeKwh?: sensorDataset[],
+    frequencyTS?: sensorDataset[]
 }
 
 export const getReads = async (req: Request, res: Response, next: NextFunction) => {
@@ -55,12 +56,15 @@ export const getReads = async (req: Request, res: Response, next: NextFunction) 
         const reads :readsGetObj = {
             deviceId: idToSearch
         }
-        const [current, voltage, activeKwh] = await Promise.all([
+        const [current, voltage, activeKwh, frequencyTS, activePower, pf] = await Promise.all([
              aggregateReads(idToSearch, sensorType.curr1, readQuery.startDate, readQuery.endDate  ),
              aggregateReads(idToSearch, sensorType.volt1, readQuery.startDate, readQuery.endDate  ),
-             aggregateReads(idToSearch, sensorType.totalKwh, readQuery.startDate, readQuery.endDate  )
+             aggregateReads(idToSearch, sensorType.totalKwh, readQuery.startDate, readQuery.endDate  ),
+             aggregateReads(idToSearch, sensorType.frequency, readQuery.startDate, readQuery.endDate  ),
+             aggregateReads(idToSearch, sensorType.activePower, readQuery.startDate, readQuery.endDate  ),
+             aggregateReads(idToSearch, sensorType.powerFactor, readQuery.startDate, readQuery.endDate  ),
         ])
-        console.log(current);
+
         reads.current = current.map((sensor) => {
             return sensor._id;
         });
@@ -70,10 +74,13 @@ export const getReads = async (req: Request, res: Response, next: NextFunction) 
         reads.activeKwh = activeKwh.map((sensor) => {
             return sensor._id;
         });
+        reads.frequencyTS = frequencyTS.map((sensor) => {
+            return sensor._id;
+        });
         /* Prepare Overview Data */
-        reads.pf= 0.98;
-        reads.frequency= 59.70;
-        reads.power= 0.00;
+        reads.pf= pf[0]._id.value;
+        reads.frequency= reads.frequencyTS[0].value;
+        reads.power= activePower[0]._id.value;
         reads.energy= reads.activeKwh[0].value;
         reads.lineCurrent = reads.current[0].value;
         reads.lineVoltage = reads.voltage[0].value;
