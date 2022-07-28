@@ -24,7 +24,7 @@ export const executeReadsQuery = (query: string, from: number = 0, limit: number
     });
 }
 
-export const aggregateReads = async (device: Types.ObjectId, sensor: sensorType, minDate: Date, maxDate:Date) => {
+export const aggregateReads = async (device: Types.ObjectId, sensor: sensorType, limit: number = 50) => {
     return await ReadsModel.aggregate([
         { $unwind: "$metadata" },
         { $match: { $and: [{ "deviceId": device }, { "metadata.type": sensor }] } },
@@ -32,6 +32,6 @@ export const aggregateReads = async (device: Types.ObjectId, sensor: sensorType,
             $group: {_id: {timestamp: "$timestamp",value: "$metadata.value"}},
         },
         { $sort : { "_id.timestamp" : -1 } },
-        { $limit : 50 },
+        { $limit : limit },
     ])
 }

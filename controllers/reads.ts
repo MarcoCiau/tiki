@@ -57,12 +57,12 @@ export const getReads = async (req: Request, res: Response, next: NextFunction) 
             deviceId: idToSearch
         }
         const [current, voltage, activeKwh, frequencyTS, activePower, pf] = await Promise.all([
-             aggregateReads(idToSearch, sensorType.curr1, readQuery.startDate, readQuery.endDate  ),
-             aggregateReads(idToSearch, sensorType.volt1, readQuery.startDate, readQuery.endDate  ),
-             aggregateReads(idToSearch, sensorType.totalKwh, readQuery.startDate, readQuery.endDate  ),
-             aggregateReads(idToSearch, sensorType.frequency, readQuery.startDate, readQuery.endDate  ),
-             aggregateReads(idToSearch, sensorType.activePower, readQuery.startDate, readQuery.endDate  ),
-             aggregateReads(idToSearch, sensorType.powerFactor, readQuery.startDate, readQuery.endDate  ),
+             aggregateReads(idToSearch, sensorType.curr1 ),
+             aggregateReads(idToSearch, sensorType.volt1 ),
+             aggregateReads(idToSearch, sensorType.totalKwh ),
+             aggregateReads(idToSearch, sensorType.frequency ),
+             aggregateReads(idToSearch, sensorType.activePower, 1 ),
+             aggregateReads(idToSearch, sensorType.powerFactor, 1 ),
         ])
 
         reads.current = current.map((sensor) => {
