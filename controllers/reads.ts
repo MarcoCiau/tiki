@@ -3,17 +3,10 @@ import mongoose from 'mongoose';
 import { StatusCodes } from "http-status-codes";
 import ReadsModel from '../models/reads';
 import DeviceModel from '../models/device';
-import { aggregateReads, executeReadsQuery } from '../util/db.queries';
-import { BadRequestError, NotFoundError } from '../errors';
+import { aggregateReads } from '../util/db.queries';
+import {  NotFoundError } from '../errors';
 import { Types } from 'mongoose';
-import { sensorType, unitType } from '../util/read.types';
-
-interface readsQueryObj {
-    deviceId: Types.ObjectId,
-    type?: string,
-    startDate: Date,
-    endDate: Date
-}
+import { sensorType } from '../util/read.types';
 
 interface sensorDataset {
     timestamp: Date | number,
@@ -36,23 +29,9 @@ interface readsGetObj {
 export const getReads = async (req: Request, res: Response, next: NextFunction) => {
 
     try {
-        const { type, deviceId } = req.query;
+        const { type, deviceId } = req.query;//TODO: handle stats type
         let idToSearch = new mongoose.Types.ObjectId(deviceId as string);
-        let readQuery: readsQueryObj = {
-            deviceId: idToSearch,
-            startDate: new Date(),
-            endDate: new Date()
-        };
 
-        if (type && type === "lastHour") {
-            const startD = Math.round(new Date().getTime() / 1000);
-            const endD = startD - 3600000;
-
-            readQuery.startDate = new Date(startD);
-            readQuery.endDate = new Date(endD);
-            console.log(readQuery.startDate);
-            console.log(readQuery.endDate);
-        }
         const reads :readsGetObj = {
             deviceId: idToSearch
         }
