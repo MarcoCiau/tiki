@@ -7,24 +7,25 @@ import { aggregateReads } from '../util/db.queries';
 import {  NotFoundError } from '../errors';
 import { Types } from 'mongoose';
 import { sensorType } from '../util/read.types';
-
-interface sensorDataset {
-    timestamp: Date | number,
-    value: number,
-}
-interface readsGetObj {
-    deviceId: Types.ObjectId,
-    pf?: number,
-    frequency?: number,
-    power?: number,
-    energy?: number,
-    lineVoltage?: number,
-    lineCurrent?: number,
-    current?: sensorDataset[],
-    voltage?: sensorDataset[],
-    activeKwh?: sensorDataset[],
-    frequencyTS?: sensorDataset[]
-}
+import { reportData } from '../services/socketService';
+import { readsGetObj } from '../util/readModel.types';
+// interface sensorDataset {
+//     timestamp: Date | number,
+//     value: number,
+// }
+// interface readsGetObj {
+//     deviceId: Types.ObjectId,
+//     pf?: number,
+//     frequency?: number,
+//     power?: number,
+//     energy?: number,
+//     lineVoltage?: number,
+//     lineCurrent?: number,
+//     current?: sensorDataset[],
+//     voltage?: sensorDataset[],
+//     activeKwh?: sensorDataset[],
+//     frequencyTS?: sensorDataset[]
+// }
 
 export const getReads = async (req: Request, res: Response, next: NextFunction) => {
 
@@ -125,6 +126,8 @@ export const createRead = async (req: Request, res: Response, next: NextFunction
         deviceExists.lastReport = new Date();
         // save reads and update device
         await Promise.all([readDocument.save(), deviceExists.save()]);
+        // report data using socket.io
+        reportData(req.body);
         res.status(StatusCodes.OK).json({ msg: 'success' });
     } catch (error) {
         console.log('Create Device failed.', error);
