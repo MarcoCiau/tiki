@@ -13,8 +13,6 @@ export const reportData = (payload: Reads) => {
         lineVoltage: payload.metadata[1].value,
         lineCurrent: payload.metadata[0].value,
     }
-    console.log(reads);
-    
     const socket = server.getSocketServer();
     socket.sockets.in("abc123").emit("deviceSensors", JSON.stringify(reads));
 }

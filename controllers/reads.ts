@@ -5,27 +5,9 @@ import ReadsModel from '../models/reads';
 import DeviceModel from '../models/device';
 import { aggregateReads } from '../util/db.queries';
 import {  NotFoundError } from '../errors';
-import { Types } from 'mongoose';
 import { sensorType } from '../util/read.types';
 import { reportData } from '../services/socketService';
 import { readsGetObj } from '../util/readModel.types';
-// interface sensorDataset {
-//     timestamp: Date | number,
-//     value: number,
-// }
-// interface readsGetObj {
-//     deviceId: Types.ObjectId,
-//     pf?: number,
-//     frequency?: number,
-//     power?: number,
-//     energy?: number,
-//     lineVoltage?: number,
-//     lineCurrent?: number,
-//     current?: sensorDataset[],
-//     voltage?: sensorDataset[],
-//     activeKwh?: sensorDataset[],
-//     frequencyTS?: sensorDataset[]
-// }
 
 export const getReads = async (req: Request, res: Response, next: NextFunction) => {
 
@@ -51,8 +33,6 @@ export const getReads = async (req: Request, res: Response, next: NextFunction) 
             return res.status(StatusCodes.OK).json({ msg: 'success', reads: {},  });
         }
 
-        console.log(activePower);
-        console.log(pf);
         if (current)
         {
             reads.current = current.map((sensor) => {

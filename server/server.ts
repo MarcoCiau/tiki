@@ -71,14 +71,12 @@ class AppServer {
     sockets() {
         let userIdRoom = "";
         this.io.on("connection", (socket: socketIO.Socket) => {
-            console.log('a user connected : ' + socket.id)
+            console.log('client connected : ' + socket.id);
             socket.on('disconnect', function () {
-                console.log('socket disconnected : ' + socket.id)
+                console.log('client disconnected : ' + socket.id);
             })
                 // once a client has connected, we expect to get a ping from them saying what room they want to join
             socket.on('room', function(room) {
-                console.log(room);
-                
                 userIdRoom = room;
                 socket.join(room);
             });
