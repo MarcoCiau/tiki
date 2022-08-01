@@ -14,5 +14,7 @@ export const reportData = (payload: Reads) => {
         lineCurrent: payload.metadata[0].value,
     }
     const socket = server.getSocketServer();
-    socket.sockets.in("abc123").emit("deviceSensors", JSON.stringify(reads));
+    console.log(`emit: ${payload.deviceId}`);
+    
+    socket.sockets.in(`${payload.deviceId}`).emit("deviceSensors", JSON.stringify(reads));
 }
