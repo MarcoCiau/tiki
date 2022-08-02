@@ -11,8 +11,8 @@ import errorHandlerMiddleware from '../middlewares/errorHandler';
 import authRoutes from '../routes/auth';
 import deviceRoutes from '../routes/device';
 import readsRoutes from '../routes/reads';
-import initDeviceService from '../services/deviceService';
 import { ClientToServerEvents, InterServerEvents, ServerToClientEvents, SocketData } from "../util/socket.types";
+import deviceService from '../services/deviceService';
 
 class AppServer {
     private app: Application;
@@ -104,7 +104,7 @@ class AppServer {
             await connectDB();
             console.log('DB Connected!');
             this.listen();
-            initDeviceService();
+            deviceService.init();
         } catch (error) {
             console.log('Init Server Failed : ', error);
         }
