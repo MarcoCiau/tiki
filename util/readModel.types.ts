@@ -15,6 +15,13 @@ export interface Reads {
     metadata: SensorData[]
 }
 
+export interface ReadsHistoric {
+    deviceId: Types.ObjectId,
+    timestamp: Date,
+    type: sensorType,
+    value: number,
+    unit: unitType
+}
 
 interface sensorDataset {
     timestamp: Date | number,
