@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "compile": "tsc",
-    "postinstall": "tsc",
+    "deploy-client":"mv ./client ./dist",
+    "postinstall": "npm run compile && npm run deploy-client",
     "start": "node dist/app.js",
     "dev": "nodemon dist/app.js",
     "test": "jest ./dist/__test__",
