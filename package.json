@@ -1,26 +1,29 @@
 {
-  "name": "promatic_energy_monitor_backend",
+  "name": "tiki_iot",
   "version": "1.0.0",
-  "description": "backend system for iot energy meter",
+  "description": "Tiki IoT is an app focused on real-time monitoring and managing IoT devices (temperature sensors, energy meters, etc)",
   "main": "index.js",
   "scripts": {
     "compile": "tsc",
-    "postinstall": "tsc",
+    "install-client": "cd tiki_client && npm install",
+    "build-client": "cd tiki_client && npm run build",
+    "deploy-client":"mv ./tiki_client/build ./dist",
+    "postinstall": "npm run compile && npm run install-client && npm run build-client && npm run deploy-client",
     "start": "node dist/app.js",
-    "run": "nodemon dist/app.js",
+    "dev": "nodemon dist/app.js",
     "test": "jest ./dist/__test__",
     "watch-ts": "tsc -w"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/MarcoCiau/promatic_energy_monitor_backend.git"
+    "url": "git+https://github.com/MarcoCiau/tiki.git"
   },
   "author": "marco ciau",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/MarcoCiau/promatic_energy_monitor_backend/issues"
+    "url": "https://github.com/MarcoCiau/tiki/issues"
   },
-  "homepage": "https://github.com/MarcoCiau/promatic_energy_monitor_backend#readme",
+  "homepage": "https://github.com/MarcoCiau/tiki#readme",
   "dependencies": {
     "bcrypt": "^5.0.1",
     "cors": "^2.8.5",
@@ -30,9 +33,11 @@
     "express-rate-limit": "^6.4.0",
     "express-validator": "^6.14.0",
     "helmet": "^5.1.0",
+    "http-status-codes": "^2.2.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.2.0",
-    "node-cron": "^3.0.0"
+    "node-cron": "^3.0.0",
+    "socket.io": "^4.5.1"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",

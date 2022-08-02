@@ -1,6 +1,7 @@
 import { body, CustomValidator, param, validationResult, Result } from 'express-validator';
 import { Request, Response } from 'express';
 import { deviceType } from '../util/read.types';
+import { BadRequestError } from '../errors';
 
 let validateDeviceType: CustomValidator = value => {
     return (value === deviceType.singlePhase || value === deviceType.threePhase);
@@ -69,7 +70,7 @@ export const updateRules = () => {
 export const result = (req: Request, res: Response, next: any) => {
     const errors: Result = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
+        throw new BadRequestError("Please provide valid values", errors.array());
     }
     next();
 };

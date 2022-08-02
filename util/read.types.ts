@@ -5,7 +5,11 @@ export  enum sensorType {
     volt1 = "VOLT_A",
     volt2 = "VOLT_B",
     volt3 = "VOLT_C",
-    totalKwh = "TOTAL_ACTIVE_KWH"
+    totalKwh = "TOTAL_ACTIVE_KWH",
+    activePower = "ACTIVE_POWER",
+    powerFactor = "POWER_FACTOR",
+    frequency = "FREQUENCY",
+    none = "NA"
 }
 
 export enum  deviceType {
@@ -17,4 +21,7 @@ export  enum unitType {
     current = "A",
     voltage = "V",
     kwh = "kwh",
+    kw = "kw",
+    frequency = "Hz",
+    none = "NA"
 }

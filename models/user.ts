@@ -4,7 +4,8 @@ import bcrypt from 'bcrypt';
 interface User {
     name: string,
     email: string,
-    password: string
+    password: string,
+    timezone: string,
 }
 
 interface UserDocument extends User, Document {
@@ -14,7 +15,8 @@ interface UserDocument extends User, Document {
 const userSchema: Schema<UserDocument> = new Schema({
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
-    password: { type: String, required: true }
+    password: { type: String, required: true },
+    timezone: { type: String, default: "Etc/GMT" }
 });
 
 userSchema.methods.toJSON = function () {
