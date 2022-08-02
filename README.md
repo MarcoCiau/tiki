@@ -4,7 +4,7 @@ This is the backend server to the Tiki IoT Platform.
 Tiki IoT Platform is an app focused on real-time monitoring and managing IoT devices (temperature sensors, energy meters, etc).
 ![Tiki App Screenshot](/tiki_app.png)
 ## Demo Link 
-Access my app at [google.com](https://google.com)
+Access my app [here](https://tiki-iot.herokuapp.com/).
 
 To take it for a test run, try these login credentials:
 - **Email Address**: testuser3@email.com
