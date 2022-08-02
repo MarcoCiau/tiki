@@ -27,7 +27,7 @@ Tiki IoT Platform v1.0 is based on monolithic architecture where all components 
 - [Mongoose ODM](https://mongoosejs.com/):  provided object-document mapping for easy MongoDB data retreival and manipulation.
 - [Socket.io](https://socket.io/): used to establish a real-time telemetry with the **Web UI**.
 ## Dependencies
-- [express-validator](https://www.npmjs.com/package/express-validator): set of express.js middlewares used for validate and sanatize HTTP end-points data.  
+- [express-validator](https://www.npmjs.com/package/express-validator): set of express.js middlewares used for validate and sanatize REST API end-point's data.  
 - [bcrypt](https://www.npmjs.com/package/bcrypt): password hashing algorithm used to securely save and verify users password.
 - [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken) : for user authentication and authorization using JWT.
 
