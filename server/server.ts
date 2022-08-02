@@ -32,11 +32,11 @@ class AppServer {
         this.port = envConfig.SERVER_PORT || '4000';
         this.middlewares();
         // only when ready to deploy
-        this.app.use(express.static(path.resolve(__dirname, "../client/build")))
+        this.app.use(express.static(path.resolve(__dirname, "../build")))
         this.routes();
         // only when ready to deploy
         this.app.get('*', function (req, res) {
-            res.sendFile(path.resolve(__dirname, '../client/build', 'index.html'))
+            res.sendFile(path.resolve(__dirname, '../build', 'index.html'))
         });
         this.notFoundMiddleware();
         this.errorHandlerMiddleware();
