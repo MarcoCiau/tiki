@@ -79,7 +79,7 @@ export const getDevice = async (req: Request, res: Response, next: NextFunction)
 
 export const createDevice = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { name, mac } = req.body;
+        const { name, type, mac } = req.body;
         const { userId } = res.locals.jwtPayload;
         const clientExists = await UserModel.findOne({ _id: userId });
         if (!clientExists) {
@@ -89,7 +89,8 @@ export const createDevice = async (req: Request, res: Response, next: NextFuncti
         const deviceDocument = new DeviceModel({
             userId,
             token: deviceToken,
-            name: name,
+            name,
+            type,
             mac
         });
         const result = await deviceDocument.save();

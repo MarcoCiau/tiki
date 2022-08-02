@@ -1,9 +1,11 @@
 import { Schema, model, Types} from "mongoose";
+import { deviceType } from "../util/read.types";
 
 interface Device {
     userId: Types.ObjectId,
     token: string, 
     name: string,
+    type: deviceType,
     mac: string,
     connected: boolean,
     lastConnected: Date,
@@ -23,6 +25,10 @@ const deviceSchema: Schema<Device> = new Schema({
     },
     name: {
         type: String,
+        required: true,
+    },
+    type: {
+        type: Number,
         required: true,
     },
     mac: {

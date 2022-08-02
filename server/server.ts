@@ -1,4 +1,7 @@
 import express, { Application } from 'express';
+import { Server } from 'socket.io';
+import http from 'http'
+import socketIO from 'socket.io'
 import helmet from 'helmet';
 import mongoSanatize from 'express-mongo-sanitize';
 import envConfig from '../config/config';
@@ -9,16 +12,28 @@ import authRoutes from '../routes/auth';
 import deviceRoutes from '../routes/device';
 import readsRoutes from '../routes/reads';
 import initDeviceService from '../services/deviceService';
-class Server {
+import { ClientToServerEvents, InterServerEvents, ServerToClientEvents, SocketData } from "../util/socket.types";
+
+class AppServer {
     private app: Application;
     private port: string;
+    private httpServer: http.Server;
+    private io: socketIO.Server;
     constructor() {
         this.app = express();
+        this.httpServer = http.createServer(this.app);
+        this.io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(this.httpServer, {
+            cors: {
+                origin: "*",
+                methods: ["GET", "POST"]
+            }
+        });
         this.port = envConfig.SERVER_PORT || '8000';
         this.middlewares();
         this.routes();
         this.notFoundMiddleware();
         this.errorHandlerMiddleware();
+        this.sockets();
     }
 
     middlewares() {
@@ -46,21 +61,42 @@ class Server {
         /* error handler */
         this.app.use(errorHandlerMiddleware);
     }
-    
+
     routes() {
         this.app.use('/api/v1/auth', authRoutes);
         this.app.use('/api/v1/device', deviceRoutes);
         this.app.use('/api/v1/read', readsRoutes);
     }
 
+    sockets() {
+        let userIdRoom = "";
+        this.io.on("connection", (socket: socketIO.Socket) => {
+            console.log('client connected : ' + socket.id);
+            socket.on('disconnect', function () {
+                console.log('client disconnected : ' + socket.id);
+            })
+                // once a client has connected, we expect to get a ping from them saying what room they want to join
+            socket.on('room', function(room) {
+                console.log(room );
+                
+                userIdRoom = room;
+                socket.join(`${room}`);
+            });
+        });
+    }
+
     listen() {
-        this.app.listen(this.port, () => {
+        this.httpServer.listen(this.port, () => {
             console.log(`Server running on port: ${this.port}`);
         });
     }
 
     getApp() {
         return this.app;
+    }
+
+    getSocketServer () {
+        return this.io;
     }
 
     async init() {
@@ -74,5 +110,5 @@ class Server {
         }
     }
 }
-const server = new Server();
+const server = new AppServer();
 export default server;

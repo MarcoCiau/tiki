@@ -1,19 +1,73 @@
 import { Request, Response, NextFunction } from 'express';
+import mongoose from 'mongoose';
 import { StatusCodes } from "http-status-codes";
 import ReadsModel from '../models/reads';
 import DeviceModel from '../models/device';
-import { executeReadsQuery } from '../util/db.queries';
-import { BadRequestError, NotFoundError } from '../errors';
+import { aggregateReads } from '../util/db.queries';
+import {  NotFoundError } from '../errors';
+import { sensorType } from '../util/read.types';
+import { reportData } from '../services/socketService';
+import { readsGetObj } from '../util/readModel.types';
 
 export const getReads = async (req: Request, res: Response, next: NextFunction) => {
 
     try {
-        const { query = "", from = 0, limit = 5, sort = 1 } = req.query;
-        const reads: any = await executeReadsQuery(query.toString(), Number(from), Number(limit), Number(sort));
-        if (!reads) {
-            throw new BadRequestError("Get Reads by pagination failed.")
+        const { type, deviceId } = req.query;//TODO: handle stats type
+        let idToSearch = new mongoose.Types.ObjectId(deviceId as string);
+
+        const reads :readsGetObj = {
+            deviceId: idToSearch
         }
-        res.status(StatusCodes.OK).json({ msg: 'success', count: reads.length, reads });
+
+        const [current, voltage, activeKwh, frequencyTS, activePower, pf] = await Promise.all([
+             aggregateReads(idToSearch, sensorType.curr1 ),
+             aggregateReads(idToSearch, sensorType.volt1 ),
+             aggregateReads(idToSearch, sensorType.totalKwh ),
+             aggregateReads(idToSearch, sensorType.frequency ),
+             aggregateReads(idToSearch, sensorType.activePower, 1 ),
+             aggregateReads(idToSearch, sensorType.powerFactor, 1 ),
+        ])
+
+        if (current.length === 0)
+        {
+            return res.status(StatusCodes.OK).json({ msg: 'success', reads: {},  });
+        }
+
+        if (current)
+        {
+            reads.current = current.map((sensor) => {
+                return sensor._id;
+            });
+            reads.lineCurrent = reads.current[0].value;
+        }
+
+        if (voltage)
+        {
+            reads.voltage = voltage.map((sensor) => {
+                return sensor._id;
+            });
+            reads.lineVoltage = reads.voltage[0].value;
+        }
+
+        if (activeKwh)
+        {
+            reads.activeKwh = activeKwh.map((sensor) => {
+                return sensor._id;
+            });
+            reads.energy= reads.activeKwh[0].value;
+        }
+        if (frequencyTS)
+        {
+            reads.frequencyTS = frequencyTS.map((sensor) => {
+                return sensor._id;
+            });
+            reads.frequency= reads.frequencyTS[0].value;
+        }
+        if (pf) reads.pf= pf[0]._id.value;
+        if (activePower)reads.power= activePower[0]._id.value;
+        
+        /* Send Response*/
+        res.status(StatusCodes.OK).json({ msg: 'success', reads,  });
     } catch (error) {
         console.log('Get all Reads failed.', error);
         next(error);
@@ -52,7 +106,9 @@ export const createRead = async (req: Request, res: Response, next: NextFunction
         deviceExists.lastReport = new Date();
         // save reads and update device
         await Promise.all([readDocument.save(), deviceExists.save()]);
-        res.status(StatusCodes.OK).json({ msg: 'success'});
+        // report data using socket.io
+        reportData(req.body);
+        res.status(StatusCodes.OK).json({ msg: 'success' });
     } catch (error) {
         console.log('Create Device failed.', error);
         next(error);

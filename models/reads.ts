@@ -1,29 +1,31 @@
 import { Schema, model, Types } from "mongoose";
 import { sensorType, unitType } from "../util/read.types";
+import { Reads, SensorData } from "../util/readModel.types";
+// interface sensorData {
+//     _id: Types.ObjectId,
+//     type: sensorType,
+//     value: number,
+//     unit: unitType
+// }
 
-interface sensorData {
-    _id: Types.ObjectId,
-    type: sensorType,
-    value: number,
-    unit: unitType
-}
-
-interface Reads {
-    deviceId: Types.ObjectId,
-    timestamp: Date,
-    metadata: sensorData[]
-}
+// interface Reads {
+//     deviceId: Types.ObjectId,
+//     timestamp: Date,
+//     metadata: sensorData[]
+// }
 
 const readSchema: Schema<Reads> = new Schema({
     deviceId: {
         type: Schema.Types.ObjectId,
         required: true,
-        ref: "Devices"
+        ref: "Devices",
+        index: true,
     },
     timestamp: {
-        type: Date
+        type: Date,
+        index: true,
     },
-    metadata: [new Schema<sensorData>({
+    metadata: [new Schema<SensorData>({
         type: {
             type: String,
             default: sensorType.curr1,
