@@ -15,10 +15,10 @@ Tiki IoT Platform v1.0 is based on monolithic architecture where all components 
 
 ![Tiki IoT Monolithic Architecture](/tiki_iot_arquitecture.png)
 ### Components
-- **IoT Devices**: belongs to all IoT devices ans sensors which send reports data in a interval of time (10 seconds by default)
-- **Network Transport**: Tiki IoT provides HTTP transportation for comunication between the Core Services and IoT Devices
-- **Core Services**:  are responsible for REST API calls, managing and storing IoT devices data, Websockets subscriptions for real-time telemetry and monitoring IoT devices connectivity state
-- **Web UI**: user interface based on React.js which allows to end-users an easy way to monitor and manage IoT devices
+- **IoT Devices**: belongs to all IoT devices ans sensors which send reports data in a interval of time (10 seconds by default).
+- **Network Transport**: Tiki IoT provides HTTP transportation for comunication between the Core Services and IoT Devices.
+- **Core Services**:  are responsible for REST API calls, managing and storing IoT devices data, Websockets subscriptions for real-time telemetry and monitoring IoT devices connectivity state.
+- **Web UI**: user interface based on React.js which allows to end-users an easy way to monitor and manage IoT devices. For more details of the Web UI Client, visit the following [repository](https://github.com/MarcoCiau/tiki_client).
 ## Technology
 
 - [Express.js](https://expressjs.com/): Exposes REST API end-points, a custom error handler is implemented and multiple middlwares for security, data validation and sanatization, authentication and authorization are implemented.
@@ -35,7 +35,6 @@ Tiki IoT Platform v1.0 is based on monolithic architecture where all components 
 - [helmet](https://helmetjs.github.io/): for secure Express.js server app by properly settings HTTP Headers.  
 - [express-rate-limit](https://www.npmjs.com/package/express-rate-limit): used to limit repeated requests (brute force attacks) to public APIs(register/login).
 - [express-mongo-sanitize](https://www.npmjs.com/package/express-mongo-sanitize) : used to prevent MongoDB Injection Attacks.
-## Data Model
 
 ## Setup - Deployment
 Please follow the instructions [here](/Developer.md) to setup the project for development and to know how to deploy it. 
