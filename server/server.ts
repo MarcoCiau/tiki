@@ -5,6 +5,7 @@ import http from 'http'
 import socketIO from 'socket.io'
 import helmet from 'helmet';
 import mongoSanatize from 'express-mongo-sanitize';
+import swaggerUi from 'swagger-ui-express';
 import envConfig from '../config/config';
 import { connectDB } from '../config/db';
 import cors from 'cors';
@@ -14,6 +15,7 @@ import deviceRoutes from '../routes/device';
 import readsRoutes from '../routes/reads';
 import initDeviceService from '../services/deviceService';
 import { ClientToServerEvents, InterServerEvents, ServerToClientEvents, SocketData } from "../util/socket.types";
+import swaggerDocumentSetup from '../doc-swagger/swagger-spec';
 
 class AppServer {
     private app: Application;
@@ -72,6 +74,11 @@ class AppServer {
         this.app.use('/api/v1/auth', authRoutes);
         this.app.use('/api/v1/device', deviceRoutes);
         this.app.use('/api/v1/read', readsRoutes);
+        this.app.use(
+            "/docs",
+            swaggerUi.serve,
+            swaggerUi.setup(swaggerDocumentSetup)
+        );
     }
 
     sockets() {

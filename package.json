@@ -7,7 +7,7 @@
     "compile": "tsc",
     "install-client": "cd tiki_client && npm install",
     "build-client": "cd tiki_client && npm run build",
-    "deploy-client":"mv ./tiki_client/build ./dist",
+    "deploy-client": "mv ./tiki_client/build ./dist",
     "postinstall": "npm run compile && npm run install-client && npm run build-client && npm run deploy-client",
     "start": "node dist/app.js",
     "dev": "nodemon dist/app.js",
@@ -37,7 +37,9 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.2.0",
     "node-cron": "^3.0.0",
-    "socket.io": "^4.5.1"
+    "socket.io": "^4.5.1",
+    "swagger-jsdoc": "^6.2.5",
+    "swagger-ui-express": "^4.5.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
@@ -47,6 +49,8 @@
     "@types/jsonwebtoken": "^8.5.8",
     "@types/node-cron": "^3.0.1",
     "@types/supertest": "^2.0.12",
+    "@types/swagger-jsdoc": "^6.0.1",
+    "@types/swagger-ui-express": "^4.1.3",
     "jest": "^28.1.1",
     "supertest": "^6.2.3",
     "ts-jest": "^28.0.5",
