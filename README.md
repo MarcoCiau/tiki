@@ -1,7 +1,7 @@
 # Tiki IoT Platform Backend
 This is the backend server to the Tiki IoT Platform.
 
-Tiki IoT Platform is an app focused on real-time monitoring and managing IoT devices (temperature sensors, energy meters, etc).
+Tiki IoT Platform is an app focused on real-time monitoring and managing IoT devices (single and three phase energy meters).
 ![Tiki App Screenshot](/tiki_app.png)
 ## Demo Link 
 Access my app [here](https://tiki-iot.herokuapp.com/).
@@ -40,5 +40,5 @@ Tiki IoT Platform v1.0 is based on monolithic architecture where all components 
 Please follow the instructions [here](/Developer.md) to setup the project for development and to know how to deploy it. 
 
 ## API V1 Documentation
-https://documenter.getpostman.com/view/5095898/UyxeoTvn
+https://documenter.getpostman.com/view/5095898/VUr1FXZm
 
