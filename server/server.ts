@@ -1,4 +1,5 @@
 import express, { Application } from 'express';
+import path from 'path';
 import { Server } from 'socket.io';
 import http from 'http'
 import socketIO from 'socket.io'
@@ -28,9 +29,15 @@ class AppServer {
                 methods: ["GET", "POST"]
             }
         });
-        this.port = envConfig.SERVER_PORT || '8000';
+        this.port = envConfig.SERVER_PORT || '4000';
         this.middlewares();
+        // only when ready to deploy
+        this.app.use(express.static(path.resolve(__dirname, "../build")))
         this.routes();
+        // only when ready to deploy
+        this.app.get('*', function (req, res) {
+            res.sendFile(path.resolve(__dirname, '../build', 'index.html'))
+        });
         this.notFoundMiddleware();
         this.errorHandlerMiddleware();
         this.sockets();
@@ -47,7 +54,6 @@ class AppServer {
         this.app.use(express.urlencoded({ extended: false }));
         /* sanatizer for mogodb*/
         this.app.use(mongoSanatize());
-
     }
 
     notFoundMiddleware() {
@@ -75,10 +81,10 @@ class AppServer {
             socket.on('disconnect', function () {
                 console.log('client disconnected : ' + socket.id);
             })
-                // once a client has connected, we expect to get a ping from them saying what room they want to join
-            socket.on('room', function(room) {
-                console.log(room );
-                
+            // once a client has connected, we expect to get a ping from them saying what room they want to join
+            socket.on('room', function (room) {
+                console.log(room);
+
                 userIdRoom = room;
                 socket.join(`${room}`);
             });
@@ -95,7 +101,7 @@ class AppServer {
         return this.app;
     }
 
-    getSocketServer () {
+    getSocketServer() {
         return this.io;
     }
 

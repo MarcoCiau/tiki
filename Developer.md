@@ -23,9 +23,20 @@ npm start
 
 
 ## Production
+
+-  log in to your Heroku account and follow the prompts to create a new SSH public key.
+``` bash
+heroku login
 ```
-npm run build
+
+- For existing repositories, add the heroku remote
+``` bash
+heroku git:remote -a tiki-iot
 ```
-```
-npm run start
+
+
+- Deploy `production` branch
+
+``` bash
+git push heroku production:main
 ```

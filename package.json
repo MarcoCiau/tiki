@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "compile": "tsc",
-    "postinstall": "tsc",
+    "install-client": "cd tiki_client && npm install",
+    "build-client": "cd tiki_client && npm run build",
+    "deploy-client":"mv ./tiki_client/build ./dist",
+    "postinstall": "npm run compile && npm run install-client && npm run build-client && npm run deploy-client",
     "start": "node dist/app.js",
     "dev": "nodemon dist/app.js",
     "test": "jest ./dist/__test__",

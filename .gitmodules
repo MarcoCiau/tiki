@@ -1,0 +1,3 @@
+[submodule "tiki_client"]
+	path = tiki_client
+	url = git@github.com:MarcoCiau/tiki_client.git
