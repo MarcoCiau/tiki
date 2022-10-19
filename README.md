@@ -11,7 +11,7 @@ Due to the nature of the project, working with a lot of data in a real time scen
 ## What would you do differently next time?
 In my opinion I will take advantage of the benefits of TypeScript and Clean Code principles to make the code more efficient and structured as well.
 
-Another improvements would be optimize the MongoDB Data Modeling considering the needs of the application and the performance of queries.
+Another improvements would be optimize the MongoDB Data Modeling considering the needs of the application and the performance of the queries.
 
 Lastly, I would like to implement a Database Caching strategy using Redis in combine with Stack and Hash Table Data Structures in order to improve the performance of the real-time communication with the **Web UI**.
 
@@ -21,7 +21,7 @@ For this project I applied my knowledge of TypeScript, REST API, MongoDB-Mongoos
 For a future version I'm considering to add new features based on Redis and building a CI/CD pipeline.
 
 
-# Demo
+## Demo
 Access my app [here](https://tiki-iot.herokuapp.com/).
 
 To take it for a test run, try these login credentials:
