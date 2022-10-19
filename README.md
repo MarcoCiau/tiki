@@ -1,9 +1,27 @@
 # Tiki IoT Platform Backend
-This is the backend server to the Tiki IoT Platform.
-
-Tiki IoT Platform is an app focused on real-time monitoring and managing IoT devices (single and three phase energy meters).
+Tiki IoT Platform is an app focused on real-time monitoring energy consumption data. 
 ![Tiki App Screenshot](/tiki_app.png)
-## Demo Link 
+
+## What was your motivation?
+This project was born because I was looking to build a project in which I can demonstrate my skills as a backend developer as well as my passion for IoT and renewable energies. 
+  
+## What challenged you when making this project?
+Due to the nature of the project, working with a lot of data in a real time scenario, was a real challenge, however, MongoDB features such as time series were very helpful to overcame this challenge.
+
+## What would you do differently next time?
+In my opinion I will take advantage of the benefits of TypeScript and Clean Code principles to make the code more efficient and structured as well.
+
+Another improvements would be optimize the MongoDB Data Modeling considering the needs of the application and the performance of queries.
+
+Lastly, I would like to implement a Database Caching strategy using Redis in combine with Stack and Hash Table Data Structures in order to improve the performance of the real-time communication with the **Web UI**.
+
+## What learnings have you taken with you into other projects?
+
+For this project I applied my knowledge of TypeScript, REST API, MongoDB-Mongoose, Authentication and Authorization using JWT, Socket.io, and React.js with Hooks. 
+For a future version I'm considering to add new features based on Redis and building a CI/CD pipeline.
+
+
+# Demo
 Access my app [here](https://tiki-iot.herokuapp.com/).
 
 To take it for a test run, try these login credentials:
