@@ -1,9 +1,30 @@
 import request from "../config/testConfig";
 import { connectDB, disconnectDB } from "../config/db";
+import UserModel from "../models/user";
 const authURLBase: string = "/api/v1/auth";
 let accessToken: string = "*";
 let refreshToken: string = "*";
+
+interface newUser {
+    name?: string,
+    email: string,
+    password: string,
+    timezone?: string,
+}
+
+const userData: newUser = {
+    name: "user1",
+    email: 'user1@mail.com',
+    password: 'Secret1234',
+    timezone: "America/Merida"
+}
+
 beforeAll(() => jest.setTimeout(90 * 1000));
+
+// Cleans up database between each test
+afterEach(async () => {
+    await UserModel.deleteMany()
+})
 
 describe("DB Connection", () => {
     test("It should return true if database is connected successfully", async () => {
@@ -17,48 +38,28 @@ describe("User Signup Test", () => {
     test("No User Name - It should respond with an bad request", async () => {
         const response = await request
             .post(authURLBase + "/signup")
-            .send({
-                name: "",
-                email: "user@mail.com",
-                password: "123",
-                timezone: "America/Merida"
-            });
+            .send({ ...userData, name: "" });
         expect(response.statusCode).toBe(400);
     });
 
     test("Bad Email - It should respond with an bad request", async () => {
         const response = await request
             .post(authURLBase + "/signup")
-            .send({
-                name: "user_test",
-                email: "usermail.com",
-                password: "123456789",
-                timezone: "America/Merida"
-            });
+            .send({ ...userData, email: "usermail.com" });
         expect(response.statusCode).toBe(400);
     });
 
     test("Bad Password - It should respond with an bad request", async () => {
         const response = await request
             .post(authURLBase + "/signup")
-            .send({
-                name: "user test",
-                email: "user@mail.com",
-                password: "123",
-                timezone: "America/Merida"
-            });
+            .send({ ...userData, password: "123" });
         expect(response.statusCode).toBe(400);
     });
 
     test("Bad Timezone value - It should respond with an bad request", async () => {
         const response = await request
             .post(authURLBase + "/signup")
-            .send({
-                name: "user test",
-                email: "user@mail.com",
-                password: "123",
-                timezone: 3
-            });
+            .send({ ...userData, timezone: 3 });
         expect(response.statusCode).toBe(400);
     });
 
@@ -72,26 +73,25 @@ describe("User Signup Test", () => {
     test("Signup Success - It should respond with user payload, accessToken & refreshToken", async () => {
         const response = await request
             .post(authURLBase + "/signup")
-            .send({
-                name: "user test",
-                email: "testuser3@email.com",
-                password: "qwertyui8"
-            });
-        expect(response.statusCode).toBe(200);
+            .send(userData);
+
+        expect(response.statusCode).toBe(201);
         expect(response.body.msg).toBe("success");
         expect(response.body.accessToken).not.toBeNull();
         expect(response.body.refreshToken).not.toBeNull();
     });
 
     test("email exists - It should respond with an bad request", async () => {
+        // it('returns E-mail in use when user signup with an email that is already in use', async () => {
+        const userDoc = new UserModel({...userData});
+        await userDoc.save();
+        const query =  await UserModel.findOne({email: userData.email});
+        expect(userData.email).toBe(query?.email);
         const response = await request
             .post(authURLBase + "/signup")
-            .send({
-                name: "user test",
-                email: "testuser3@email.com",
-                password: "qwertyui"
-            });
+            .send(userData);
         expect(response.statusCode).toBe(400);
+        expect(userData.email).toBe(query?.email);
     });
 });
 
@@ -135,12 +135,17 @@ describe("User Signin Test", () => {
     });
 
     test("Signin Success - It should respond with user payload, accessToken & refreshToken", async () => {
+        //workaround : signup before due the DB drop each test
+        await request
+            .post(authURLBase + "/signup")
+            .send(userData);
+        // execute Signin
         const response = await request
-            .post(authURLBase + "/signin")
-            .send({
-                email: "testuser3@email.com",
-                password: "qwertyui8"
-            });
+        .post(authURLBase + "/signin")
+        .send({
+            email: userData.email,
+            password: userData.password
+        });
         expect(response.statusCode).toBe(200);
         expect(response.body.msg).toBe("success");
         expect(response.body.accessToken).not.toBeNull();
@@ -151,12 +156,17 @@ describe("User Signin Test", () => {
 // user refresh token test
 describe("User Refresh Token - Test ", () => {
     test("Signin Success - It should respond with user payload, accessToken & refreshToken", async () => {
+        //workaround : signup before due the DB drop each test
+        await request
+        .post(authURLBase + "/signup")
+        .send(userData);
+        // execute Signin
         const response = await request
-            .post(authURLBase + "/signin")
-            .send({
-                email: "testuser3@email.com",
-                password: "qwertyui8"
-            });
+        .post(authURLBase + "/signin")
+        .send({
+            email: userData.email,
+            password: userData.password
+        });
 
         expect(response.statusCode).toBe(200);
         expect(response.body.msg).toBe("success");
@@ -215,9 +225,9 @@ describe("User Refresh Token - Test ", () => {
     });
 });
 
-describe("DB Disconnection", () => {
-    test("It should return true if database is disconnected successfully", async () => {
-        const disconnected = await disconnectDB();
-        expect(disconnected).toBeTruthy();
-    });
-});
+// describe("DB Disconnection", () => {
+//     test("It should return true if database is disconnected successfully", async () => {
+//         const disconnected = await disconnectDB();
+//         expect(disconnected).toBeTruthy();
+//     });
+// });

@@ -45,7 +45,7 @@ class authService {
             const [accessToken, refreshToken] = await this.generateTokens(userDoc._id);
             return Promise.resolve({ msg: 'success', user: result, accessToken, refreshToken });
         } catch (error) {
-            return Promise.reject("signup failed");
+            return Promise.reject(error);
         }
     }
 
@@ -66,7 +66,9 @@ class authService {
             /* Send Response */
             return Promise.resolve({ msg: 'success', user: userExists, accessToken, refreshToken });
         } catch (error) {
-            return Promise.reject("signin failed");
+            console.log(error);
+            
+            return Promise.reject(error);
         }
     }
 
@@ -79,7 +81,7 @@ class authService {
             }
             return Promise.resolve({ msg: 'success', user: result });
         } catch (error) {
-            return Promise.reject("update user failed");
+            return Promise.reject(error);
         }
     }
 
@@ -110,8 +112,8 @@ class authService {
             const result = await (await refreshTokenDoc.save()).populate('user', 'name');
             /* Send Response */
             return Promise.resolve({ status: true, msg: "success", accessToken, user: result.user, refreshToken: result.refreshToken });
-        } catch (error) {
-            return Promise.reject("refreshToken failed");
+        } catch (error) {            
+            return Promise.reject(error);
         }
     }
 }
