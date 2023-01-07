@@ -97,7 +97,7 @@ class authService {
             const validToken: any = await verifyRefreshToken(token);
             const { userId } = validToken;
             /* Check if current refresh token exists */
-            const refreshTokenExists = await RefreshTokenModel.findOne({ user: userId, token });
+            const refreshTokenExists = await RefreshTokenModel.findOne({ user: userId, refreshToken: token });
             if (!refreshTokenExists) {
                 throw new BadRequestError("Authentication Invalid", ["Invalid JWT Token"]);
             }

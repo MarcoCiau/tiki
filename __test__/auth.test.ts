@@ -1,6 +1,7 @@
 import request from "../config/testConfig";
 import { connectDB, disconnectDB } from "../config/db";
 import UserModel from "../models/user";
+import RefreshTokenModel from "../models/refreshToken";
 const authURLBase: string = "/api/v1/auth";
 let accessToken: string = "*";
 let refreshToken: string = "*";
@@ -17,6 +18,31 @@ const userData: newUser = {
     email: 'user1@mail.com',
     password: 'Secret1234',
     timezone: "America/Merida"
+}
+
+//helper functions
+/*
+signup user
+*/
+const signupUser = async () => {
+    
+    return  request
+    .post(authURLBase + "/signup")
+    .send(userData);
+
+}
+/*
+signin user
+*/
+const signinUser = async () => {
+    //workaround : signup before due the DB drop each test
+    // execute Signin
+    return request
+    .post(authURLBase + "/signin")
+    .send({
+        email: userData.email,
+        password: userData.password
+    });
 }
 
 beforeAll(() => jest.setTimeout(90 * 1000));
@@ -156,18 +182,8 @@ describe("User Signin Test", () => {
 // user refresh token test
 describe("User Refresh Token - Test ", () => {
     test("Signin Success - It should respond with user payload, accessToken & refreshToken", async () => {
-        //workaround : signup before due the DB drop each test
-        await request
-        .post(authURLBase + "/signup")
-        .send(userData);
-        // execute Signin
-        const response = await request
-        .post(authURLBase + "/signin")
-        .send({
-            email: userData.email,
-            password: userData.password
-        });
-
+        await signupUser();
+        const response = await signinUser();
         expect(response.statusCode).toBe(200);
         expect(response.body.msg).toBe("success");
         expect(response.body.accessToken).not.toBeNull();
@@ -204,6 +220,10 @@ describe("User Refresh Token - Test ", () => {
     });
 
     test("Refresh token value is an access token  - It should respond with an bad request", async () => {
+        const auth = await signupUser();
+        accessToken = auth.body.accessToken;
+        refreshToken = auth.body.refreshToken;
+
         const response = await request
             .post(authURLBase + "/refreshToken")
             .send({
@@ -213,6 +233,10 @@ describe("User Refresh Token - Test ", () => {
     });
 
     test("Refresh token updated - It should respond the new refresh token & access token", async () => {
+        const auth = await signupUser();
+        accessToken = auth.body.accessToken;
+        refreshToken = auth.body.refreshToken;
+
         const response = await request
             .post(authURLBase + "/refreshToken")
             .send({
