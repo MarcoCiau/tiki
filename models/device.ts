@@ -1,7 +1,7 @@
 import { Schema, model, Types} from "mongoose";
 import { deviceType } from "../util/read.types";
 
-interface Device {
+export interface Device {
     userId: Types.ObjectId,
     token: string, 
     name: string,
