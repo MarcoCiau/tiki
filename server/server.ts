@@ -12,8 +12,8 @@ import errorHandlerMiddleware from '../middlewares/errorHandler';
 import authRoutes from '../routes/auth';
 import deviceRoutes from '../routes/device';
 import readsRoutes from '../routes/reads';
-import initDeviceService from '../services/deviceService';
 import { ClientToServerEvents, InterServerEvents, ServerToClientEvents, SocketData } from "../util/socket.types";
+import deviceService from '../services/deviceService';
 
 class AppServer {
     private app: Application;
@@ -74,6 +74,10 @@ class AppServer {
         this.app.use('/api/v1/read', readsRoutes);
     }
 
+    services() {
+        deviceService.init();
+    }
+
     sockets() {
         let userIdRoom = "";
         this.io.on("connection", (socket: socketIO.Socket) => {
@@ -110,7 +114,7 @@ class AppServer {
             await connectDB();
             console.log('DB Connected!');
             this.listen();
-            initDeviceService();
+            this.services();
         } catch (error) {
             console.log('Init Server Failed : ', error);
         }
