@@ -1,66 +1,28 @@
 import request from "../config/testConfig";
 import { connectDB, disconnectDB } from "../config/db";
 import UserModel from "../models/user";
-import RefreshTokenModel from "../models/refreshToken";
-const authURLBase: string = "/api/v1/auth";
+import { authURLBase, userData, signupUser, signinUser } from "./factories/authFactory";
+
 let accessToken: string = "*";
 let refreshToken: string = "*";
 
-interface newUser {
-    name?: string,
-    email: string,
-    password: string,
-    timezone?: string,
-}
-
-const userData: newUser = {
-    name: "user1",
-    email: 'user1@mail.com',
-    password: 'Secret1234',
-    timezone: "America/Merida"
-}
-
-//helper functions
-/*
-signup user
-*/
-const signupUser = async () => {
-    
-    return  request
-    .post(authURLBase + "/signup")
-    .send(userData);
-
-}
-/*
-signin user
-*/
-const signinUser = async () => {
-    //workaround : signup before due the DB drop each test
-    // execute Signin
-    return request
-    .post(authURLBase + "/signin")
-    .send({
-        email: userData.email,
-        password: userData.password
-    });
-}
-
-beforeAll(() => jest.setTimeout(90 * 1000));
-
-// Cleans up database between each test
-afterEach(async () => {
-    await UserModel.deleteMany()
-})
-
-describe("DB Connection", () => {
-    test("It should return true if database is connected successfully", async () => {
-        const db = await connectDB();
-        expect(db).toBeTruthy();
-    });
-});
-
 // user registration test
 describe("User Signup Test", () => {
+
+    beforeAll(async () => {
+        jest.setTimeout(100 * 1000);
+        await connectDB();
+    })
+
+    afterAll(async () => {
+        await disconnectDB();
+    });
+
+    // Cleans up database between each test
+    afterEach(async () => {
+        await UserModel.deleteMany()
+    })
+
     test("No User Name - It should respond with an bad request", async () => {
         const response = await request
             .post(authURLBase + "/signup")
@@ -109,9 +71,9 @@ describe("User Signup Test", () => {
 
     test("email exists - It should respond with an bad request", async () => {
         // it('returns E-mail in use when user signup with an email that is already in use', async () => {
-        const userDoc = new UserModel({...userData});
+        const userDoc = new UserModel({ ...userData });
         await userDoc.save();
-        const query =  await UserModel.findOne({email: userData.email});
+        const query = await UserModel.findOne({ email: userData.email });
         expect(userData.email).toBe(query?.email);
         const response = await request
             .post(authURLBase + "/signup")
@@ -123,6 +85,19 @@ describe("User Signup Test", () => {
 
 // user login test
 describe("User Signin Test", () => {
+    beforeAll(async () => {
+        jest.setTimeout(100 * 1000);
+        await connectDB();
+    })
+
+    afterAll(async () => {
+        await disconnectDB();
+    });
+
+    // Cleans up database between each test
+    afterEach(async () => {
+        await UserModel.deleteMany()
+    })
     test("No Credentials - It should respond with an bad request", async () => {
         const response = await request
             .post(authURLBase + "/signin")
@@ -167,11 +142,11 @@ describe("User Signin Test", () => {
             .send(userData);
         // execute Signin
         const response = await request
-        .post(authURLBase + "/signin")
-        .send({
-            email: userData.email,
-            password: userData.password
-        });
+            .post(authURLBase + "/signin")
+            .send({
+                email: userData.email,
+                password: userData.password
+            });
         expect(response.statusCode).toBe(200);
         expect(response.body.msg).toBe("success");
         expect(response.body.accessToken).not.toBeNull();
@@ -181,6 +156,19 @@ describe("User Signin Test", () => {
 
 // user refresh token test
 describe("User Refresh Token - Test ", () => {
+    beforeAll(async () => {
+        jest.setTimeout(100 * 1000);
+        await connectDB();
+    })
+
+    afterAll(async () => {
+        await disconnectDB();
+    });
+
+    // Cleans up database between each test
+    afterEach(async () => {
+        await UserModel.deleteMany()
+    })
     test("Signin Success - It should respond with user payload, accessToken & refreshToken", async () => {
         await signupUser();
         const response = await signinUser();
@@ -248,10 +236,3 @@ describe("User Refresh Token - Test ", () => {
         expect(response.body.refreshToken).not.toBeNull();
     });
 });
-
-// describe("DB Disconnection", () => {
-//     test("It should return true if database is disconnected successfully", async () => {
-//         const disconnected = await disconnectDB();
-//         expect(disconnected).toBeTruthy();
-//     });
-// });
