@@ -4,7 +4,9 @@ import DeviceModel, { Device } from "../models/device";
 import UserModel from "../models/user";
 import { deviceType } from "../util/read.types";
 import { signupUser } from "./factories/authFactory";
-
+import { bulkCreateDevices } from "./factories/deviceFactory";
+import { userData } from "./factories/authFactory";
+import { Types } from "mongoose";
 //params
 const deviceURLBase: string = "/api/v1/device";
 let accessToken: string = "*";
@@ -84,3 +86,29 @@ describe("Creating a new device - Test ", () => {
         expect(response.statusCode).toBe(201);
     });
 });
+
+describe("Test getDevices with pagination, limit and sort", () => {
+    let userId: Types.ObjectId;
+    
+    beforeAll(async () => {
+        jest.setTimeout(100 * 1000);
+        await connectDB();
+        //clean up db
+        await UserModel.deleteMany();
+        await DeviceModel.deleteMany();
+        //create a test user and grab their id
+        await signupUser();
+        const query = await UserModel.findOne({ email: userData.email });
+        userId = query?._id;
+    })
+
+    afterAll(async () => {
+        await disconnectDB();
+    });
+
+    test("Create 20 devices for testing- It should return a device array length equal to 20", async () => {
+        await bulkCreateDevices(userId);
+        const devices = await DeviceModel.find({ userId });
+        expect(devices.length).toBe(20);
+    });
+})
