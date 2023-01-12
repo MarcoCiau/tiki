@@ -87,7 +87,7 @@ describe("Creating a new device - Test ", () => {
     });
 });
 
-describe("Test getDevices with pagination, limit and sort", () => {
+describe("Test getDevices with pagination, limit, filter and sort", () => {
     let userId: Types.ObjectId;
     
     beforeAll(async () => {
@@ -96,8 +96,9 @@ describe("Test getDevices with pagination, limit and sort", () => {
         //clean up db
         await UserModel.deleteMany();
         await DeviceModel.deleteMany();
-        //create a test user and grab their id
-        await signupUser();
+        //create a test user and grab their id & access token
+        const auth = await signupUser();
+        accessToken = auth.body.accessToken;
         const query = await UserModel.findOne({ email: userData.email });
         userId = query?._id;
     })
@@ -110,5 +111,87 @@ describe("Test getDevices with pagination, limit and sort", () => {
         await bulkCreateDevices(userId);
         const devices = await DeviceModel.find({ userId });
         expect(devices.length).toBe(20);
+    });
+
+    test("Test pagination - it should response with a 200 statuscode ", async () => {
+        const response = await request
+            .get(deviceURLBase)
+            .query({
+                page: 1,
+                limit: 5
+            })
+            .set("x-token", accessToken);
+        expect(response.statusCode).toBe(200);
+    });
+
+    test("Test pagination - if page and limit parameter are not defined, the reponse will be with default pagination(1 page with limit of 10 results)", async () => {
+        const response = await request
+            .get(deviceURLBase)
+            .query({})
+            .set("x-token", accessToken);
+        expect(response.body.devices.length).toBe(10);
+    });
+
+    test("Test pagination - if page and limit parameters are empty string, should a bad request", async () => {
+        const response = await request
+            .get(deviceURLBase)
+            .query({
+                page: "",
+                limit: ""
+            })
+            .set("x-token", accessToken);
+        expect(response.statusCode).toBe(400);
+    });
+
+    test("Test pagination - if page and limit parameters are random string, should a bad request", async () => {
+        const response = await request
+            .get(deviceURLBase)
+            .query({
+                page: "sdfd",
+                limit: "dfdf"
+            })
+            .set("x-token", accessToken);
+        expect(response.statusCode).toBe(400);
+    });
+
+    test("Test pagination - if limit parameter is not provided, should return 1 page with default limit of 10 results", async () => {
+        const response = await request
+            .get(deviceURLBase)
+            .query({
+                page: 1
+            })
+            .set("x-token", accessToken);
+        expect(response.body.devices.length).toBe(10);
+    });
+
+    test("Test pagination -  the response body should include a 'totalDevices' parameter with value equal to 20 (total created devices)", async () => {
+        const response = await request
+            .get(deviceURLBase)
+            .query({
+                page: 1
+            })
+            .set("x-token", accessToken); 
+        expect(response.body.totalDevices).toBe(20);
+    });
+
+    test("Test pagination - the response body should include a 'numOfPages' parameter with a default value equal to 2", async () => {
+        const response = await request
+            .get(deviceURLBase)
+            .query({
+                page: 1
+            })
+            .set("x-token", accessToken);
+        expect(response.body.numOfPages).toBe(2);
+    });
+
+    test("Test pagination - the 'numOfPages' parameter is 4 when 'limit' is set to 5", async () => {
+        const response = await request
+            .get(deviceURLBase)
+            .query({
+                page: 1,
+                limit: 5
+            })
+            .set("x-token", accessToken);
+        expect(response.body.numOfPages).toBe(4);
     });
 })

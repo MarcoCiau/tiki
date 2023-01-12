@@ -1,4 +1,4 @@
-import { body, CustomValidator, param, validationResult, Result } from 'express-validator';
+import { body, query, CustomValidator, param, validationResult, Result } from 'express-validator';
 import { Request, Response } from 'express';
 import { deviceType } from '../util/read.types';
 import { BadRequestError } from '../errors';
@@ -63,6 +63,23 @@ export const updateRules = () => {
                 .notEmpty()
                 .isBoolean()
                 .optional({checkFalsy: true})
+        ]
+    )
+};
+
+export const getAllRules = () => {
+    return (
+        [
+            query('page')
+                .notEmpty()
+                .isNumeric()
+                .isLength({ min: 1 })
+                .optional(),
+            query('limit')
+                .notEmpty()
+                .isInt()
+                .isLength({ min: 1 })
+                .optional(),
         ]
     )
 };
