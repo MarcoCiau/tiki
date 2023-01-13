@@ -194,4 +194,150 @@ describe("Test getDevices with pagination, limit, filter and sort", () => {
             .set("x-token", accessToken);
         expect(response.body.numOfPages).toBe(4);
     });
+
+    test("Test getAllDevices with 'status' filter param as empty - it should respond a bad request", async () => {
+        const response = await request
+            .get(deviceURLBase)
+            .query({
+                page: 1,
+                status:""
+            })
+        .set("x-token", accessToken);
+        expect(response.statusCode).toBe(400);
+    });
+
+    test("Test getAllDevices with 'status' filter param as a number - it should respond a bad request", async () => {
+        const response = await request
+            .get(deviceURLBase)
+            .query({
+                page: 1,
+                status: 1
+            })
+        .set("x-token", accessToken);
+        expect(response.statusCode).toBe(400);
+    });
+
+    test("Test getAllDevices with wrong device connection 'status' string param - it should respond a bad request", async () => {
+        const response = await request
+            .get(deviceURLBase)
+            .query({
+                page: 1,
+                status: "Connected"
+            })
+        .set("x-token", accessToken);
+        expect(response.statusCode).toBe(400);
+    });
+
+    test("Test getAllDevices with 'status' connection equal to 'disconnected' - it should respond with 200 status code", async () => {
+        const response = await request
+            .get(deviceURLBase)
+            .query({
+                page: 1,
+                status: "disconnected"
+            })
+        .set("x-token", accessToken);
+        expect(response.statusCode).toBe(200);
+    });
+
+    test("Test getAllDevices with 'status' connection equal to 'disconnected' - it should respond with 200 status code", async () => {
+        const response = await request
+            .get(deviceURLBase)
+            .query({
+                page: 1,
+                status: "disconnected"
+            })
+        .set("x-token", accessToken);
+        expect(response.statusCode).toBe(200);
+    });
+
+    test("Test getAllDevices with 'status' connection equal to 'disconnected' - the 'totalDevices' should be equal to 10", async () => {
+        const response = await request
+            .get(deviceURLBase)
+            .query({
+                page: 1,
+                status: "disconnected"
+            })
+        .set("x-token", accessToken);
+        expect(response.body.totalDevices).toBe(10);
+    });
+
+    test("Test getAllDevices with 'status' connection equal to 'disconnected' - the 'numOfPages' should be equal to 1", async () => {
+        const response = await request
+            .get(deviceURLBase)
+            .query({
+                page: 1,
+                status: "disconnected"
+            })
+        .set("x-token", accessToken);
+        expect(response.body.numOfPages).toBe(1);
+    });
+
+    test("Test getAllDevices with 'status' connection equal to 'disconnected' - it should respond with 200 status code", async () => {
+        const response = await request
+            .get(deviceURLBase)
+            .query({
+                page: 1,
+                status: "disconnected"
+            })
+        .set("x-token", accessToken);
+        expect(response.statusCode).toBe(200);
+    });
+
+    test("Test getAllDevices with 'status' connection equal to 'disconnected' - the number of device's array  should be equal to 10", async () => {
+        //let's assume we have 10 disconnected devices (previously created on 'bulkCreateDevices' function)
+        const response = await request
+            .get(deviceURLBase)
+            .query({
+                page: 1,
+                status: "disconnected"
+            })
+        .set("x-token", accessToken);
+        expect(response.body.devices.length).toBe(10);
+    });
+
+    test("Test getAllDevices with 'status' connection equal to 'connected' - it should respond with 200 status code", async () => {
+        const response = await request
+            .get(deviceURLBase)
+            .query({
+                page: 1,
+                status: "disconnected"
+            })
+        .set("x-token", accessToken);
+        expect(response.statusCode).toBe(200);
+    });
+
+    test("Test getAllDevices with 'status' connection equal to 'connected' - the 'totalDevices' should be equal to 10", async () => {
+        const response = await request
+            .get(deviceURLBase)
+            .query({
+                page: 1,
+                status: "connected"
+            })
+        .set("x-token", accessToken);
+        expect(response.body.totalDevices).toBe(10);
+    });
+
+    test("Test getAllDevices with 'status' connection equal to 'connected' - the 'numOfPages' should be equal to 1", async () => {
+        const response = await request
+            .get(deviceURLBase)
+            .query({
+                page: 1,
+                status: "connected"
+            })
+        .set("x-token", accessToken);
+        expect(response.body.numOfPages).toBe(1);
+    });
+
+
+    test("Test getAllDevices with 'status' connection equal to 'connected' - the number of device's array  should be equal to 10", async () => {
+        //let's assume we have 10 connected devices (previously created on 'bulkCreateDevices' function)
+        const response = await request
+            .get(deviceURLBase)
+            .query({
+                page: 1,
+                status: "connected"
+            })
+        .set("x-token", accessToken);
+        expect(response.body.devices.length).toBe(10);
+    });
 })
