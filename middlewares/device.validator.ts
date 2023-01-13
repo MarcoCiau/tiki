@@ -2,9 +2,14 @@ import { body, query, CustomValidator, param, validationResult, Result } from 'e
 import { Request, Response } from 'express';
 import { deviceType } from '../util/read.types';
 import { BadRequestError } from '../errors';
+import { deviceConnectionStatus } from '../util/device.quety.types';
 
 let validateDeviceType: CustomValidator = value => {
     return (value === deviceType.singlePhase || value === deviceType.threePhase);
+}
+
+let validateConnectionStatusType: CustomValidator = value => {
+    return (value === deviceConnectionStatus.disconnected || value === deviceConnectionStatus.connected);
 }
 
 export const createRules = () => {
@@ -79,6 +84,9 @@ export const getAllRules = () => {
                 .notEmpty()
                 .isInt()
                 .isLength({ min: 1 })
+                .optional(),
+            query('status')
+                .custom(validateConnectionStatusType)
                 .optional(),
         ]
     )

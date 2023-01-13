@@ -69,15 +69,15 @@ class deviceService {
     async getDevices(userId: Types.ObjectId, query: deviceQueryParams): Promise<paginationDevicesResponse> {
         try {
             //setup query
-            const { status, search, sort } = query;
+            const { status="", search, sort } = query;
             let deviceQuery: deviceQueryObj = {
                 userId,
             }
 
-            if (status && status == "connected") {
+            if (status == "connected") {
                 deviceQuery.connected = true;
             }
-            if (status && status == "disconnected") {
+            if (status == "disconnected") {
                 deviceQuery.connected = false;
             }
             if (search) {
@@ -116,7 +116,6 @@ class deviceService {
 
     async createDevice(userId: Types.ObjectId, device: Partial<Device>): Promise<singleDeviceResponse> {
         try {
-            const { name, type, mac } = device;
             const clientExists = await UserModel.findOne({ _id: userId });
             if (!clientExists) {
                 throw new NotFoundError(`No User with id :${userId}`);
@@ -125,9 +124,7 @@ class deviceService {
             const deviceDocument = new DeviceModel({
                 userId,
                 token: deviceToken,
-                name,
-                type,
-                mac
+                ...device
             });
             const result = await deviceDocument.save();
             return Promise.resolve({ msg: 'success', device: result });
