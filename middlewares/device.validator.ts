@@ -2,7 +2,7 @@ import { body, query, CustomValidator, param, validationResult, Result } from 'e
 import { Request, Response } from 'express';
 import { deviceType } from '../util/read.types';
 import { BadRequestError } from '../errors';
-import { deviceConnectionStatus } from '../util/device.quety.types';
+import { deviceConnectionStatus, deviceSortOptions } from '../util/device.quety.types';
 
 let validateDeviceType: CustomValidator = value => {
     return (value === deviceType.singlePhase || value === deviceType.threePhase);
@@ -10,6 +10,10 @@ let validateDeviceType: CustomValidator = value => {
 
 let validateConnectionStatusType: CustomValidator = value => {
     return (value === deviceConnectionStatus.disconnected || value === deviceConnectionStatus.connected);
+}
+
+let validateDeviceSortingType: CustomValidator = value => {
+    return Object.values(deviceSortOptions).includes(value);
 }
 
 export const createRules = () => {
@@ -87,6 +91,9 @@ export const getAllRules = () => {
                 .optional(),
             query('status')
                 .custom(validateConnectionStatusType)
+                .optional(),
+            query('sort')
+                .custom(validateDeviceSortingType)
                 .optional(),
         ]
     )
