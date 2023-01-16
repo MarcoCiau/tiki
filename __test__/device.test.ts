@@ -195,6 +195,8 @@ describe("Test getDevices with pagination, limit, filter and sort", () => {
         expect(response.body.numOfPages).toBe(4);
     });
 
+    //testing 'status' query param
+
     test("Test getAllDevices with 'status' filter param as empty - it should respond a bad request", async () => {
         const response = await request
             .get(deviceURLBase)
@@ -339,5 +341,82 @@ describe("Test getDevices with pagination, limit, filter and sort", () => {
             })
         .set("x-token", accessToken);
         expect(response.body.devices.length).toBe(10);
+    });
+
+        //testing 'sort' query param
+    test("Test getAllDevices with 'sort' query param as empty - it should respond a bad request", async () => {
+        const response = await request
+            .get(deviceURLBase)
+            .query({
+                page: 1,
+                sort:""
+            })
+        .set("x-token", accessToken);
+        expect(response.statusCode).toBe(400);
+    });
+
+    test("Test getAllDevices with 'sort' query param as a number - it should respond a bad request", async () => {
+        const response = await request
+            .get(deviceURLBase)
+            .query({
+                page: 1,
+                sort: 1
+            })
+        .set("x-token", accessToken);
+        expect(response.statusCode).toBe(400);
+    });
+    test("Test getAllDevices with wrong 'sort' string  param - it should respond a bad request", async () => {
+        const response = await request
+            .get(deviceURLBase)
+            .query({
+                page: 1,
+                sort: "ascendent"
+            })
+        .set("x-token", accessToken);
+        expect(response.statusCode).toBe(400);
+    });
+
+    test("Test getAllDevices with 'sort' param equal to 'oldest' - it should respond with 200 status code", async () => {
+        const response = await request
+            .get(deviceURLBase)
+            .query({
+                page: 1,
+                sort: "oldest"
+            })
+        .set("x-token", accessToken);
+        expect(response.statusCode).toBe(200);
+    });
+
+    test("Test getAllDevices with 'sort' param equal to 'latest' - it should respond with 200 status code", async () => {
+        const response = await request
+            .get(deviceURLBase)
+            .query({
+                page: 1,
+                sort: "latest"
+            })
+        .set("x-token", accessToken);
+        expect(response.statusCode).toBe(200);
+    });
+
+    test("Test getAllDevices with 'sort' param equal to 'a-z' - it should respond with 200 status code", async () => {
+        const response = await request
+            .get(deviceURLBase)
+            .query({
+                page: 1,
+                sort: "a-z"
+            })
+        .set("x-token", accessToken);
+        expect(response.statusCode).toBe(200);
+    });
+
+    test("Test getAllDevices with 'sort' param equal to 'z-a' - it should respond with 200 status code", async () => {
+        const response = await request
+            .get(deviceURLBase)
+            .query({
+                page: 1,
+                sort: "z-a"
+            })
+        .set("x-token", accessToken);
+        expect(response.statusCode).toBe(200);
     });
 })
