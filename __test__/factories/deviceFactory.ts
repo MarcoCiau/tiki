@@ -10,9 +10,16 @@ const decToHex  = (val : Number) => {
     return hexStr;
 }
 
+const generateRandomLetter = () => {
+    const alphabet = "abcdefghijklmnopqrstuvwxyz"
+    return alphabet[Math.floor(Math.random() * alphabet.length)]
+}
+
 const createDevice = (userId: Types.ObjectId, idx: Number) => {
+    // generate random letter Id, just for sorting tests
+    const charId = generateRandomLetter();
     return deviceService.createDevice(userId, {
-        name: `testDevice${idx}`,
+        name: `${charId}testDevice${idx}`,
         type: deviceType.singlePhase,
         mac: `FF:FF:FF:FF:FF:${decToHex(idx)}`,
         connected: (idx < 10) ? true : false
