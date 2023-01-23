@@ -38,6 +38,7 @@ export const mongoIdRule = () => {
     return (
         [
             param('id')
+                .notEmpty()
                 .isMongoId(),
         ]
     )

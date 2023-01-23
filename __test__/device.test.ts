@@ -10,6 +10,7 @@ import { Types } from "mongoose";
 //params
 const deviceURLBase: string = "/api/v1/device";
 let accessToken: string = "*";
+let userId: Types.ObjectId;
 //data 
 let newDevice: Partial<Device> = {
     name: "deviceTest01",
@@ -87,9 +88,7 @@ describe("Creating a new device - Test ", () => {
     });
 });
 
-describe("Test getDevices with pagination, limit, filter and sort", () => {
-    let userId: Types.ObjectId;
-    
+describe ("Test getDevices with pagination, limit, filter and sort", () => {    
     beforeAll(async () => {
         jest.setTimeout(100 * 1000);
         await connectDB();
@@ -420,3 +419,114 @@ describe("Test getDevices with pagination, limit, filter and sort", () => {
         expect(response.statusCode).toBe(200);
     });
 })
+
+//
+describe("Get Device By Id - Test ", () => {
+    let deviceIdStr: string = "dfdfrtg";
+    beforeAll(async () => {
+        jest.setTimeout(100 * 1000);
+        await connectDB();
+    })
+
+    afterAll(async () => {
+        await disconnectDB();
+    });
+
+    test("Device Id is not provided, should return 200", async () => {
+        const response = await request
+            .get(`${deviceURLBase}/`)
+            .set("x-token", accessToken);
+        expect(response.statusCode).toBe(200);
+    });
+
+    test("Device Id is wrong, random string , should return 400", async () => {
+        const response = await request
+            .get(`${deviceURLBase}/${deviceIdStr}`)
+            .set("x-token", accessToken);
+        expect(response.statusCode).toBe(400);
+    });
+
+    test("Get Device with correct Id, should return 200", async () => {
+        const device = await DeviceModel.findOne({ userId });
+        const response = await request        
+        .get(`${deviceURLBase}/${device?._id}`)
+        .set("x-token", accessToken);
+        expect(response.statusCode).toBe(200);
+    })
+
+    test("Get Device with correct Id, should return a 'successs' msg key value", async () => {
+        const device = await DeviceModel.findOne({ userId });
+        const response = await request        
+        .get(`${deviceURLBase}/${device?._id}`)
+        .set("x-token", accessToken);
+        expect(response.body.msg).toBe('success');
+    })
+
+    test("Get Device with correct Id, should return a device value", async () => {
+        const device = await DeviceModel.findOne({ userId });
+        console.log(device);
+        
+        const response = await request        
+        .get(`${deviceURLBase}/${device?._id}`)
+        .set("x-token", accessToken);
+        expect(response.body.device).not.toBeUndefined();
+    })
+});
+
+describe("Delete device By Id - Test ", () => {
+    beforeAll(async () => {
+        jest.setTimeout(100 * 1000);
+        await connectDB();
+    })
+
+    afterAll(async () => {
+        await disconnectDB();
+    });
+
+    test("DeviceId is not provided, should return 404-Not Found", async () => {
+        const response = await request
+            .delete(`${deviceURLBase}/`)
+            .set("x-token", accessToken);
+        expect(response.statusCode).toBe(404);
+    });
+    
+    test("DeviceId is not match with a valid device, should return 404-Not Found", async () => {
+        const response = await request
+            .delete(`${deviceURLBase}/${"63ce8d5a482f3478c17391ff"}`)
+            .set("x-token", accessToken);
+        expect(response.statusCode).toBe(404);
+    });
+
+    test("Get Device with correct Id, should return 200", async () => {
+        const device = await DeviceModel.findOne({ userId });
+        const response = await request        
+        .delete(`${deviceURLBase}/${device?._id}`)
+        .set("x-token", accessToken);
+        expect(response.statusCode).toBe(200);
+    })
+
+    test("Delete Device with correct Id, should return a 'successs' msg key value", async () => {
+        const device = await DeviceModel.findOne({ userId });
+        const response = await request        
+        .delete(`${deviceURLBase}/${device?._id}`)
+        .set("x-token", accessToken);
+        expect(response.body.msg).toBe('success');
+    })
+
+    test("Delete Device with correct Id, should return a device value", async () => {
+        const device = await DeviceModel.findOne({ userId });
+        const response = await request        
+        .delete(`${deviceURLBase}/${device?._id}`)
+        .set("x-token", accessToken);
+        expect(response.body.device).not.toBeUndefined();
+    })
+
+    test("Delete Device with correct Id, should not be available on DB", async () => {
+        const device = await DeviceModel.findOne({ userId });
+        await request        
+        .delete(`${deviceURLBase}/${device?._id}`)
+        .set("x-token", accessToken);
+        const deviceIsAvailable = await DeviceModel.findOne({ _id: device?._id});
+        expect(deviceIsAvailable).toBeNull;
+    })
+});
