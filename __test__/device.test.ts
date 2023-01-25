@@ -473,6 +473,122 @@ describe("Get Device By Id - Test ", () => {
     })
 });
 
+describe("Update device By Id - Test ", () => {
+    beforeAll(async () => {
+        jest.setTimeout(100 * 1000);
+        await connectDB();
+    })
+
+    afterAll(async () => {
+        await disconnectDB();
+    });
+
+    test("DeviceId is not provided, should return 404-Not Found", async () => {
+        const response = await request
+            .put(`${deviceURLBase}/`)
+            .send({
+                connected: true
+            })
+            .set("x-token", accessToken);
+        expect(response.statusCode).toBe(404);
+    });
+    
+    test("DeviceId is not match with a valid device, should return 404-Not Found", async () => {
+        const response = await request
+            .put(`${deviceURLBase}/${"63ce8d5a482f3478c17391ff"}`)
+            .send({
+                connected: true
+            })
+            .set("x-token", accessToken);
+        expect(response.statusCode).toBe(404);
+    });
+
+    test("Update Device with correct Id but body is empty, should return 400", async () => {
+        const device = await DeviceModel.findOne({ userId });
+        const response = await request        
+        .put(`${deviceURLBase}/${device?._id}`)
+        .send({})
+        .set("x-token", accessToken);
+        expect(response.statusCode).toBe(400);
+    })
+
+    test("Update Device with with invalid 'type' value, should return 400", async () => {
+        const device = await DeviceModel.findOne({ userId });
+        const response = await request        
+        .put(`${deviceURLBase}/${device?._id}`)
+        .send({
+            connected: "connected"
+        })
+        .set("x-token", accessToken);
+        expect(response.statusCode).toBe(400);
+    })
+
+    test("Update Device with with invalid 'connection' status value, should return 400", async () => {
+        const device = await DeviceModel.findOne({ userId });
+        const response = await request        
+        .put(`${deviceURLBase}/${device?._id}`)
+        .send({
+            type: "single-phase"
+        })
+        .set("x-token", accessToken);
+        expect(response.statusCode).toBe(400);
+    })
+
+    //TODO: VALIDATE TO UPDATE WITH A INVALID MAC STRING
+
+    test("Update Device with correct Id and correct body object, should return 200", async () => {
+        const device = await DeviceModel.findOne({ userId });
+        const response = await request        
+        .put(`${deviceURLBase}/${device?._id}`)
+        .send({
+            ...device,
+            name: `${device?.name}Updated`,
+            connected: true
+        })
+        .set("x-token", accessToken);
+        expect(response.statusCode).toBe(200);
+    })
+
+    test("Update Device with correct Id and correct body object, should return a 'successs' msg key value", async () => {
+        const device = await DeviceModel.findOne({ userId });
+        const response = await request        
+        .put(`${deviceURLBase}/${device?._id}`)
+        .send({
+            ...device,
+            name: `${device?.name}Updated`,
+            connected: true
+        })
+        .set("x-token", accessToken);
+        expect(response.body.msg).toBe('success');
+    })
+
+    test("Update Device with correct Id and correct body object, should return a device value", async () => {
+        const device = await DeviceModel.findOne({ userId });
+        const response = await request        
+        .put(`${deviceURLBase}/${device?._id}`)
+        .send({
+            ...device,
+            name: `${device?.name}Updated`,
+            connected: true
+        })
+        .set("x-token", accessToken);
+        expect(response.body.device).not.toBeUndefined();
+    })
+
+    test("Update Device with correct Id and correct body object, should return an updated device's name", async () => {
+        const device = await DeviceModel.findOne({ userId });
+        const response = await request        
+        .put(`${deviceURLBase}/${device?._id}`)
+        .send({
+            ...device,
+            name: `${device?.name}Updated`,
+            connected: true
+        })
+        .set("x-token", accessToken);
+        expect(response.body.device.name).toBe(`${device?.name}Updated`);
+    })
+});
+
 describe("Delete device By Id - Test ", () => {
     beforeAll(async () => {
         jest.setTimeout(100 * 1000);

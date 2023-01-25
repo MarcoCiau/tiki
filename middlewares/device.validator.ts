@@ -47,6 +47,8 @@ export const mongoIdRule = () => {
 export const updateRules = () => {
     return (
         [
+            param('id')
+                .isMongoId(),
             body('token')
                 .trim()
                 .isLength({ min: 64, max: 64 })

@@ -2,7 +2,7 @@ import cron from "node-cron";
 import { Types } from 'mongoose';
 import DeviceModel, { Device } from "../models/device";
 import UserModel from "../models/user";
-import { NotFoundError } from '../errors';
+import { BadRequestError, NotFoundError } from '../errors';
 import { generateDeviceToken } from '../util/auth.util';
 
 export interface deviceQueryParams {
@@ -136,6 +136,10 @@ class deviceService {
 
     async updateDevice(deviceId: Types.ObjectId, device: Partial<Device>): Promise<singleDeviceResponse> {
         try {
+            if (Object.keys(device).length == 0)
+            {
+                throw new BadRequestError(`Trouble in body request payload`);
+            }
             const result = await DeviceModel.findOneAndUpdate({ _id: deviceId }, { ...device }, { new: true });
             if (!result) {
                 throw new NotFoundError(`No device with id :${deviceId}`);
