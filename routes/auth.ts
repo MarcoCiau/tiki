@@ -1,7 +1,15 @@
 import { Router } from 'express';
 import rateLimit from 'express-rate-limit';
+import config from '../config/config';
+let limiterWindowMs = 15 * 60 * 1000;//default for production
+//During test on development phase, config with a lowest ms for limiter 
+if (config.NODE_ENV === 'development') 
+{
+    limiterWindowMs = 10;
+}
+  
 const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
+    windowMs: limiterWindowMs,
     max: 20,
     message: "Too many requests from this IP, please try again after 15 minutes",
 })
