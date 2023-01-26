@@ -77,6 +77,22 @@ describe("Creating a new device - Test ", () => {
         expect(response.statusCode).toBe(400);
     });
 
+    test("Empty MAC string - It should respond with an bad request", async () => {
+        const response = await request
+            .post(deviceURLBase)
+            .send({ ...newDevice, mac: "" })
+            .set("x-token", accessToken);
+        expect(response.statusCode).toBe(400);
+    });
+
+    test("Invalid MAC string Format - It should respond with an bad request", async () => {
+        const response = await request
+            .post(deviceURLBase)
+            .send({ ...newDevice, mac: "GJ:01:F5:4D:01:00" })
+            .set("x-token", accessToken);
+        expect(response.statusCode).toBe(400);
+    });
+
     test("Device Created - It should respond the new refresh token & access token", async () => {
         const auth = await signupUser();
         accessToken = auth.body.accessToken;
@@ -534,7 +550,38 @@ describe("Update device By Id - Test ", () => {
         expect(response.statusCode).toBe(400);
     })
 
-    //TODO: VALIDATE TO UPDATE WITH A INVALID MAC STRING
+    test("Update Device with with empty 'MAC' value, should return 400", async () => {
+        const device = await DeviceModel.findOne({ userId });
+        const response = await request        
+        .put(`${deviceURLBase}/${device?._id}`)
+        .send({
+            mac: ""
+        })
+        .set("x-token", accessToken);
+        expect(response.statusCode).toBe(400);
+    })
+
+    test("Update Device with with invalid 'MAC' value, should return 400", async () => {
+        const device = await DeviceModel.findOne({ userId });
+        const response = await request        
+        .put(`${deviceURLBase}/${device?._id}`)
+        .send({
+            mac: "GG:GG:GG:GG:GG:GG"
+        })
+        .set("x-token", accessToken);
+        expect(response.statusCode).toBe(400);
+    })
+
+    test("Update Device with with a valid 'MAC' value, should return 200", async () => {
+        const device = await DeviceModel.findOne({ userId });
+        const response = await request        
+        .put(`${deviceURLBase}/${device?._id}`)
+        .send({
+            mac: "F7:D1:62:BB:FD:0B"
+        })
+        .set("x-token", accessToken);
+        expect(response.statusCode).toBe(200);
+    })
 
     test("Update Device with correct Id and correct body object, should return 200", async () => {
         const device = await DeviceModel.findOne({ userId });

@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import { deviceType } from '../util/read.types';
 import { BadRequestError } from '../errors';
 import { deviceConnectionStatus, deviceSortOptions } from '../util/device.quety.types';
-
+const macRegexPattern = new RegExp("^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})|([0-9a-fA-F]{4}\\.[0-9a-fA-F]{4}\\.[0-9a-fA-F]{4})$");
 let validateDeviceType: CustomValidator = value => {
     return (value === deviceType.singlePhase || value === deviceType.threePhase);
 }
@@ -25,7 +25,8 @@ export const createRules = () => {
             body('mac')
                 .notEmpty()
                 .trim()
-                .isLength({ min: 17, max: 17 }),
+                .isLength({ min: 17, max: 17 })
+                .matches(macRegexPattern),
             body('type')
                 .notEmpty()
                 .isNumeric()
@@ -63,6 +64,7 @@ export const updateRules = () => {
                 .notEmpty()
                 .trim()
                 .isLength({ min: 17, max: 17 })
+                .matches(macRegexPattern)
                 .optional(),
             body('type')
                 .exists()
