@@ -6,20 +6,20 @@ import { sensorType } from '../util/read.types';
 import { Reads, readsGetObj } from '../util/readModel.types';
 
 class ReadService {
-    async getAll(deviceId: Types.ObjectId, type: sensorType) {
+    async getAll(deviceId: Types.ObjectId) {
         try {
-            let idToSearch = new mongoose.Types.ObjectId(deviceId);
+            // let idToSearch = new mongoose.Types.ObjectId(deviceId);
             const reads: readsGetObj = {
-                deviceId: idToSearch
+                deviceId
             }
 
             const [current, voltage, activeKwh, frequencyTS, activePower, pf] = await Promise.all([
-                aggregateReads(idToSearch, sensorType.curr1),
-                aggregateReads(idToSearch, sensorType.volt1),
-                aggregateReads(idToSearch, sensorType.totalKwh),
-                aggregateReads(idToSearch, sensorType.frequency),
-                aggregateReads(idToSearch, sensorType.activePower, 1),
-                aggregateReads(idToSearch, sensorType.powerFactor, 1),
+                aggregateReads(deviceId, sensorType.curr1),
+                aggregateReads(deviceId, sensorType.volt1),
+                aggregateReads(deviceId, sensorType.totalKwh),
+                aggregateReads(deviceId, sensorType.frequency),
+                aggregateReads(deviceId, sensorType.activePower, 1),
+                aggregateReads(deviceId, sensorType.powerFactor, 1),
             ])
 
             if (current.length === 0) {
@@ -63,7 +63,7 @@ class ReadService {
         }
     }
 
-    async getById(readId : Types.ObjectId ){
+    async getOne(readId: Types.ObjectId) {
         try {
             const result = await ReadsModel.findOne({ _id: readId });
             if (!result) {
@@ -76,10 +76,10 @@ class ReadService {
         }
     }
 
-    async createOne(token: string, newRead : Reads){
+    async createOne(token: string, newRead: Partial<Reads>) {
         try {
             const { timestamp, metadata } = newRead;
-            const sensorEpochtime = timestamp.getDate();
+            const sensorEpochtime = timestamp?.getDate() || 0;
             const deviceExists = await DeviceModel.findOne({ token });
             if (!deviceExists) {
                 return Promise.reject(`No Device with token :${token}`);
@@ -95,8 +95,6 @@ class ReadService {
             deviceExists.lastReport = new Date();
             // save reads and update device
             await Promise.all([readDocument.save(), deviceExists.save()]);
-            // report data using socket.io
-            // reportData(req.body);//TODO: add function this
             return Promise.resolve({ msg: 'success' });
         } catch (error) {
             console.log('Create Device failed.', error);
@@ -104,7 +102,7 @@ class ReadService {
         }
     }
 
-    async deleteOne(readId : Types.ObjectId) {
+    async deleteOne(readId: Types.ObjectId) {
         try {
             const result = await ReadsModel.findByIdAndDelete({ _id: readId });
             if (!result) {
