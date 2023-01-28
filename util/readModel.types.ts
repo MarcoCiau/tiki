@@ -9,6 +9,7 @@ export interface SensorData {
     unit: unitType
 }
 
+/// define sensor dataset for creating new entry
 export interface Reads {
     deviceId: Types.ObjectId,
     timestamp: Date,
@@ -21,6 +22,7 @@ interface sensorDataset {
     value: number,
 }
 
+//get reads obj response
 export interface readsGetObj {
     deviceId: Types.ObjectId,
     timestamp?: Date | number,
