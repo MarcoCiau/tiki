@@ -79,7 +79,7 @@ class ReadService {
     async createOne(token: string, newRead: Partial<Reads>) {
         try {
             const { timestamp, metadata } = newRead;
-            const sensorEpochtime = timestamp?.getDate() || 0;
+            const sensorEpochtime = Number(timestamp) || 0;
             const deviceExists = await DeviceModel.findOne({ token });
             if (!deviceExists) {
                 return Promise.reject(`No Device with token :${token}`);

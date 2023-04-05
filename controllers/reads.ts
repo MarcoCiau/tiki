@@ -37,11 +37,11 @@ export const getRead = async (req: Request, res: Response, next: NextFunction) =
 
 export const createRead = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { token, timestamp, metadata } = req.body;
+        const { deviceId, token, timestamp, metadata } = req.body;
         await ReadService.createOne(token as string, { timestamp, metadata });
         // report data using socket.io
-        reportData(req.body);
-        res.status(StatusCodes.OK).json({ msg: 'success' });
+        reportData({ deviceId, timestamp, metadata });
+        res.status(StatusCodes.CREATED).json({ msg: 'success' });
     } catch (error) {
         console.log('Create Device failed.', error);
         next(error);

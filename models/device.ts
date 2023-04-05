@@ -2,6 +2,7 @@ import { Schema, model, Types} from "mongoose";
 import { deviceType } from "../util/read.types";
 
 export interface Device {
+    _id: Types.ObjectId,
     userId: Types.ObjectId,
     token: string, 
     name: string,
