@@ -15,7 +15,7 @@ const generateRandomLetter = () => {
     return alphabet[Math.floor(Math.random() * alphabet.length)]
 }
 
-const createDevice = (userId: Types.ObjectId, idx: Number) => {
+export const createDevice = (userId: Types.ObjectId, idx: Number) => {
     // generate random letter Id, just for sorting tests
     const charId = generateRandomLetter();
     return deviceService.createDevice(userId, {
