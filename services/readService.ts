@@ -1,12 +1,26 @@
-import mongoose, { Types } from 'mongoose';
 import ReadsModel from '../models/reads';
 import DeviceModel from '../models/device';
 import { aggregateReads } from '../util/db.queries';
 import { sensorType } from '../util/read.types';
 import { Reads, readsGetObj } from '../util/readModel.types';
 
+export interface getReadResponse {
+    msg: string,
+    read: Reads,
+}
+
+export interface getAllReadsResponse {
+    msg: string,
+    reads: readsGetObj,
+}
+
+export interface createReadResponse {
+    msg: string,
+    read?: Reads
+}
+
 class ReadService {
-    async getAll(deviceId: Types.ObjectId) {
+    async getAll(deviceId: Types.ObjectId): Promise <getAllReadsResponse> {
         try {
             // let idToSearch = new mongoose.Types.ObjectId(deviceId);
             const reads: readsGetObj = {
@@ -23,7 +37,7 @@ class ReadService {
             ])
 
             if (current.length === 0) {
-                return Promise.resolve({ msg: 'success', reads: {} });
+                return Promise.resolve({ msg: 'success', reads });
             }
 
             if (current) {
@@ -63,20 +77,20 @@ class ReadService {
         }
     }
 
-    async getOne(readId: Types.ObjectId) {
+    async getOne(readId: Types.ObjectId): Promise <getReadResponse> {
         try {
             const result = await ReadsModel.findOne({ _id: readId });
             if (!result) {
                 return Promise.reject(`No Read with id :${readId}`);
             }
-            return Promise.resolve({ msg: 'success', device: result });
+            return Promise.resolve({ msg: 'success', read: result });
         } catch (error) {
             console.log('Get client failed.', error);
             return Promise.reject(error);
         }
     }
 
-    async createOne(token: string, newRead: Partial<Reads>) {
+    async createOne(token: string, newRead: Partial<Reads>): Promise <createReadResponse> {
         try {
             const { timestamp, metadata } = newRead;
             const sensorEpochtime = Number(timestamp) || 0;
@@ -102,13 +116,13 @@ class ReadService {
         }
     }
 
-    async deleteOne(readId: Types.ObjectId) {
+    async deleteOne(readId: Types.ObjectId): Promise <getReadResponse> {
         try {
             const result = await ReadsModel.findByIdAndDelete({ _id: readId });
             if (!result) {
                 return Promise.reject(`No Read with id :${readId}`);
             }
-            return Promise.resolve({ msg: 'success', device: result });
+            return Promise.resolve({ msg: 'success', read: result });
         } catch (error) {
             console.log('Delete Read failed.', error);
             return Promise.reject(error);
