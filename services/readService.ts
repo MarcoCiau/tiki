@@ -1,3 +1,4 @@
+import { Types } from 'mongoose';
 import ReadsModel from '../models/reads';
 import DeviceModel from '../models/device';
 import { aggregateReads } from '../util/db.queries';
