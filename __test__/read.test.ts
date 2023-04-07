@@ -6,11 +6,12 @@ import { deviceType } from "../util/read.types";
 import { signupUser } from "./factories/authFactory";
 import { createDevice } from "./factories/deviceFactory";
 import { userData } from "./factories/authFactory";
-import { buildReadRequestPayload } from "./factories/readFactory";
+import { buildReadRequestPayload, bulkCreateReads } from "./factories/readFactory";
 import { now, Types } from "mongoose";
 import { singleDeviceResponse } from "../services/deviceService";
 
 import {Reads, SensorData} from "../util/readModel.types";
+import ReadsModel from "../models/reads";
 
 const readURLBase: string =   "/api/v1/read";
 
@@ -21,7 +22,7 @@ let deviceId: Types.ObjectId;
 //data 
 let newReadPayload = {} //TODO: define create read response
 
-describe.only("Creating a new Read - Test ", () => {
+describe("Creating a new Read - Test ", () => {
 
     beforeAll(async () => {
         jest.setTimeout(100 * 1000);
@@ -85,6 +86,82 @@ describe.only("Creating a new Read - Test ", () => {
     });
 });
 
+describe("Test get one read by Id", ()=> {
+    let readIdStr: string = "dfdfrtg";
+    beforeAll(async () => {
+        jest.setTimeout(100 * 1000);
+        await connectDB();
+        await UserModel.deleteMany();
+        await DeviceModel.deleteMany();
+        await ReadsModel.deleteMany();
+        //create a test user and grab their id & access token
+        const auth = await signupUser();
+        accessToken = auth.body.accessToken;
+        const query = await UserModel.findOne({ email: userData.email });
+        userId = query?._id;
+        // create a test device and grab their access token
+        const device : singleDeviceResponse = await createDevice(userId, 0);
+        deviceAccessToken = device.device.token;
+        deviceId = device.device._id;
+        await bulkCreateReads(deviceAccessToken);
+    })
+
+    afterAll(async () => {
+        await disconnectDB();
+    });
+
+    test("Missed access token header - It should respond with an 400 request", async () => {
+        const response = await request
+            .get(`${readURLBase}/${readIdStr}`)
+            // .set("x-token", accessToken);
+        expect(response.statusCode).toBe(400);
+    });
+
+    test("Invalid access token value - It should respond with an 400 request", async () => {
+        const response = await request
+            .get(`${readURLBase}/${readIdStr}`)
+            .set("x-token", "dfdfdf4i45i45");
+        expect(response.statusCode).toBe(400);
+    });
+
+    test("Read Id is not provided, should return 200", async () => {
+        const response = await request
+            .get(`${readURLBase}/`)
+            .set("x-token", accessToken);
+        expect(response.statusCode).toBe(200);
+    });
+
+    test("Read Id is wrong, random string , should return 400", async () => {
+        const response = await request
+            .get(`${readURLBase}/${"dfrgrmao5h"}`)
+            .set("x-token", accessToken);
+        expect(response.statusCode).toBe(400);
+    });
+
+    test("Get Read with correct Id, should return 200", async () => {
+        const read = await ReadsModel.findOne({ deviceId });
+        const response = await request        
+        .get(`${readURLBase}/${read?._id}`)
+        .set("x-token", accessToken);
+        expect(response.statusCode).toBe(200);
+    })
+
+    test("Get Read with correct Id, should return a 'successs' msg key value", async () => {
+        const read = await ReadsModel.findOne({ deviceId });
+        const response = await request        
+        .get(`${readURLBase}/${read?._id}`)
+        .set("x-token", accessToken);
+        expect(response.body.msg).toBe('success');
+    })
+    
+    test("Get Read with correct Id, should return a read value", async () => {
+        const read = await ReadsModel.findOne({ deviceId });
+        const response = await request        
+        .get(`${readURLBase}/${read?._id}`)
+        .set("x-token", accessToken);
+        expect(response.body.read).not.toBeUndefined();
+    })
+});
 // describe ("Test getDevices with pagination, limit, filter and sort", () => {    
 //     beforeAll(async () => {
 //         jest.setTimeout(100 * 1000);

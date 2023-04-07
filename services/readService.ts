@@ -78,13 +78,13 @@ class ReadService {
         }
     }
 
-    async getOne(readId: Types.ObjectId): Promise <getReadResponse> {
+    async getOne(readId: Types.ObjectId): Promise <Reads> {
         try {
             const result = await ReadsModel.findOne({ _id: readId });
             if (!result) {
                 return Promise.reject(`No Read with id :${readId}`);
             }
-            return Promise.resolve({ msg: 'success', read: result });
+            return Promise.resolve(result);
         } catch (error) {
             console.log('Get client failed.', error);
             return Promise.reject(error);

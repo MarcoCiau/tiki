@@ -27,8 +27,8 @@ export const getRead = async (req: Request, res: Response, next: NextFunction) =
     try {
         const { id } = req.params;
         let readId = new mongoose.Types.ObjectId(id as string);
-        const device = await ReadService.getOne(readId);
-        res.status(StatusCodes.OK).json({ msg: 'success', device });
+        const read = await ReadService.getOne(readId);
+        res.status(StatusCodes.OK).json({ msg: 'success', read });
     } catch (error) {
         console.log('Get client failed.', error);
         next(error);
@@ -40,7 +40,7 @@ export const createRead = async (req: Request, res: Response, next: NextFunction
         const { deviceId, token, timestamp, metadata } = req.body;
         await ReadService.createOne(token as string, { timestamp, metadata });
         // report data using socket.io
-        reportData({ deviceId, timestamp, metadata });
+        reportData({ deviceId, token, timestamp, metadata });
         res.status(StatusCodes.CREATED).json({ msg: 'success' });
     } catch (error) {
         console.log('Create Device failed.', error);

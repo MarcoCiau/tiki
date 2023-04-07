@@ -3,7 +3,7 @@ import { sensorType, unitType } from "../util/read.types";
 
 
 export interface SensorData {
-    _id: Types.ObjectId,
+    _id?: Types.ObjectId,
     type: sensorType,
     value: number,
     unit: unitType
@@ -11,8 +11,9 @@ export interface SensorData {
 
 /// define sensor dataset for creating new entry
 export interface Reads {
-    deviceId: Types.ObjectId,
-    timestamp: Date,
+    deviceId?: Types.ObjectId,
+    token: string,
+    timestamp: Date | number,
     metadata: SensorData[]
 }
 
