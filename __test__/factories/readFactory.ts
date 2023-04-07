@@ -1,40 +1,56 @@
 import { Schema, model, Types } from "mongoose";
-export const buildReadRequestPayload = (deviceToken: string) => {
+import readService from "../../services/readService";
+import { sensorType, unitType } from "../../util/read.types";
+import { Reads } from "../../util/readModel.types";
+
+export const buildReadRequestPayload = (deviceToken: string): Reads => {
     return {
         token: deviceToken,
         timestamp: Date.now(),
         metadata: [
             {
-                type: "CURRENT_A",
+                type: sensorType.curr1,
                 value: 254,
-                unit: "A"
+                unit: unitType.current
             },
             {
-                type: "VOLT_A",
+                type: sensorType.volt1,
                 value: 22550,
-                unit: "V"
+                unit: unitType.voltage
             },
             {
-                type: "TOTAL_ACTIVE_KWH",
+                type: sensorType.totalKwh,
                 value: 16588,
-                unit: "kwh"
+                unit: unitType.kwh
             },
             {
-                type: "ACTIVE_POWER",
+                type: sensorType.activePower,
                 value: 16588,
-                unit: "kw"
+                unit: unitType.kw
             },
             {
-                type: "POWER_FACTOR",
+                type: sensorType.powerFactor,
                 value: 16588,
-                unit: "NA"
+                unit: unitType.none
             },
             {
-                type: "FREQUENCY",
+                type: sensorType.frequency,
                 value: 16588,
-                unit: "Hz"
+                unit: unitType.frequency
             }
 
         ]
     }
 }
+
+export const createRead = (token: string, read: Partial<Reads>) => {
+    return readService.createOne(token, read);
+}
+
+export const bulkCreateReads =  (token: string) => {
+    const promises = [];
+    for (let index = 0; index < 20; index++) {
+        promises.push(createRead(token, buildReadRequestPayload(token)));
+    }
+    return Promise.all(promises);
+} 
