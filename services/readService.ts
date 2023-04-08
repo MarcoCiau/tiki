@@ -4,6 +4,7 @@ import DeviceModel from '../models/device';
 import { aggregateReads } from '../util/db.queries';
 import { sensorType } from '../util/read.types';
 import { Reads, readsGetObj } from '../util/readModel.types';
+import { NotFoundError } from '../errors';
 
 export interface getReadResponse {
     msg: string,
@@ -82,7 +83,7 @@ class ReadService {
         try {
             const result = await ReadsModel.findOne({ _id: readId });
             if (!result) {
-                return Promise.reject(`No Read with id :${readId}`);
+                throw new NotFoundError(`No Read with id :${readId}`);
             }
             return Promise.resolve(result);
         } catch (error) {
@@ -97,7 +98,7 @@ class ReadService {
             const sensorEpochtime = Number(timestamp) || 0;
             const deviceExists = await DeviceModel.findOne({ token });
             if (!deviceExists) {
-                return Promise.reject(`No Device with token :${token}`);
+                throw new NotFoundError(`No Device with token :${token}`);
             }
             const readDocument = new ReadsModel({
                 deviceId: deviceExists._id,
@@ -121,7 +122,7 @@ class ReadService {
         try {
             const result = await ReadsModel.findByIdAndDelete({ _id: readId });
             if (!result) {
-                return Promise.reject(`No Read with id :${readId}`);
+                throw new NotFoundError(`No Read with id :${readId}`);
             }
             return Promise.resolve({ msg: 'success', read: result });
         } catch (error) {

@@ -9,14 +9,22 @@ import { sensorType } from '../util/read.types';
 import { reportData } from '../services/socketService';
 import { Reads, readsGetObj } from '../util/readModel.types';
 import ReadService from '../services/readService';
-
+import { isValidObjectId } from 'mongoose';
 export const getReads = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { deviceId } = req.query;//TODO: handle sensor type
         let idToSearch = new mongoose.Types.ObjectId(deviceId as string);
+        if (!isValidObjectId(idToSearch))
+        {
+            return res.status(StatusCodes.BAD_REQUEST).json({msg: `Invalid deviceId `});
+        }
         const reads = await ReadService.getAll(idToSearch);
+        if (!reads)
+        {
+            return res.status(StatusCodes.NOT_FOUND).json({msg: `Not Reads found with deviceId: ${req.params.id}`});
+        }
         /* Send Response*/
-        res.status(StatusCodes.OK).json({ msg: 'success', reads, });
+        res.status(StatusCodes.OK).json(reads);
     } catch (error) {
         console.log('Get all Reads failed.', error);
         next(error);
@@ -48,12 +56,13 @@ export const createRead = async (req: Request, res: Response, next: NextFunction
     }
 }
 
-export const deleteRead = async (req: Request, res: Response, next: NextFunction) => {
+
+export const deleteRead = async (req: Request, res: Response, next: NextFunction) =>  {
     try {
         const { id } = req.params;
         let readId = new mongoose.Types.ObjectId(id as string);
         const device = await ReadService.deleteOne(readId);
-        res.status(StatusCodes.OK).json({ msg: 'success', device });
+        res.status(StatusCodes.OK).json(device);
     } catch (error) {
         console.log('Delete Read failed.', error);
         next(error);

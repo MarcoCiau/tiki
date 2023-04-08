@@ -25,6 +25,8 @@ let validateQueryString: CustomValidator = value => {
 export const getAllRules = () => {
     return (
         [
+            query('deviceId')
+                .isMongoId(),
             query('from')
                 .notEmpty()
                 .isInt()
