@@ -162,6 +162,70 @@ describe("Test get one read by Id", ()=> {
         expect(response.body.read).not.toBeUndefined();
     })
 });
+
+describe("Delete Read By Id - Test ", () => {
+    beforeAll(async () => {
+        jest.setTimeout(100 * 1000);
+        await connectDB();
+        await UserModel.deleteMany();
+        await DeviceModel.deleteMany();
+        await ReadsModel.deleteMany();
+        //create a test user and grab their id & access token
+        const auth = await signupUser();
+        accessToken = auth.body.accessToken;
+        const query = await UserModel.findOne({ email: userData.email });
+        userId = query?._id;
+        // create a test device and grab their access token
+        const device : singleDeviceResponse = await createDevice(userId, 0);
+        deviceAccessToken = device.device.token;
+        deviceId = device.device._id;
+        await bulkCreateReads(deviceAccessToken);
+    })
+
+    afterAll(async () => {
+        await disconnectDB();
+    });
+
+    test("ReadId is not provided, should return 404-Not Found", async () => {
+        const response = await request
+            .delete(`${readURLBase}/`)
+            .set("x-token", accessToken);
+        expect(response.statusCode).toBe(404);
+    });
+    
+    test("ReadId is not match with a valid Read, should return 404-Not Found", async () => {
+        const response = await request
+            .delete(`${readURLBase}/${"63ce8d5a482f3478c17391ff"}`)
+            .set("x-token", accessToken);
+        expect(response.statusCode).toBe(404);
+    });
+
+    test("Delete Read with correct Id, should return 200", async () => {
+        const device = await DeviceModel.findOne({ userId });
+        const response = await request        
+        .delete(`${readURLBase}/${device?._id}`)
+        .set("x-token", accessToken);
+        expect(response.statusCode).toBe(200);
+    })
+
+    test("Delete Read with correct Id, should return a 'successs' msg key value", async () => {
+        const read = await ReadsModel.findOne({ deviceId });
+        const response = await request        
+        .delete(`${readURLBase}/${read?._id}`)
+        .set("x-token", accessToken);
+        expect(response.body.msg).toBe('success');
+    })
+
+    test("Delete Read with correct Id, should return a read value", async () => {
+        const read = await ReadsModel.findOne({ deviceId });
+        const response = await request        
+        .delete(`${readURLBase}/${read?._id}`)
+        .set("x-token", accessToken);
+        expect(response.body.device).not.toBeUndefined();
+    })
+
+});
+
 // describe ("Test getDevices with pagination, limit, filter and sort", () => {    
 //     beforeAll(async () => {
 //         jest.setTimeout(100 * 1000);
