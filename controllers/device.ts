@@ -31,6 +31,10 @@ export const getDevice = async (req: Request, res: Response, next: NextFunction)
     try {
         const deviceId = new Types.ObjectId(req.params.id);
         const result = await deviceService.getDeviceById(deviceId);
+        if (!result)
+        {
+            return res.status(StatusCodes.NOT_FOUND).json({msg: `Not device found with id: ${req.params.id}`});
+        }
         res.status(StatusCodes.OK).json(result);
     } catch (error) {
         console.log('Get device failed.', error);
