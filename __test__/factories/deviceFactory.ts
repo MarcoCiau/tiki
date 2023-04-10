@@ -1,6 +1,6 @@
 import deviceService from "../../services/deviceService";
 import { Types } from 'mongoose';
-import { deviceType } from "../../util/read.types";
+import { deviceType } from "../../interfaces/reads";;
 
 const decToHex  = (val : Number) => {
     let hexStr = val.toString(16);

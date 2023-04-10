@@ -1,7 +1,6 @@
-import { Schema, model, Types } from "mongoose";
+
 import readService from "../../services/readService";
-import { sensorType, unitType } from "../../util/read.types";
-import { Reads } from "../../util/readModel.types";
+import { Reads, sensorType, unitType } from "../../interfaces/reads";
 
 export const buildReadRequestPayload = (deviceToken: string): Reads => {
     return {

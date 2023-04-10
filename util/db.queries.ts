@@ -1,6 +1,6 @@
 import ReadsModel from "../models/reads";
 import { Types } from 'mongoose';
-import { sensorType } from "./read.types";
+import { sensorType } from "../interfaces/reads";
 
 export const executeReadsQuery = (query: string, from: number = 0, limit: number = 5, sort: number = 1) => {
     return new Promise((resolve, reject) => {

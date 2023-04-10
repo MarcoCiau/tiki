@@ -1,7 +1,6 @@
 import { Types } from "mongoose";
 import server from "../server/server"
-import { Reads } from "../util/readModel.types";
-import { readsGetObj } from "../util/readModel.types";
+import { Reads, readsGetObj }  from "../interfaces/reads";
 export const reportData = (payload: Reads) => {
     
     const reads :readsGetObj = {

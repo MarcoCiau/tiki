@@ -2,8 +2,7 @@ import { Types } from 'mongoose';
 import ReadsModel from '../models/reads';
 import DeviceModel from '../models/device';
 import { aggregateReads } from '../util/db.queries';
-import { sensorType } from '../util/read.types';
-import { Reads, readsGetObj } from '../util/readModel.types';
+import { Reads, readsGetObj,sensorType }  from "../interfaces/reads";
 import { NotFoundError } from '../errors';
 
 export interface getReadResponse {

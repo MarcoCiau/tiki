@@ -2,7 +2,7 @@ import request from "../config/testConfig";
 import { connectDB, disconnectDB } from "../config/db";
 import DeviceModel, { Device } from "../models/device";
 import UserModel from "../models/user";
-import { deviceType } from "../util/read.types";
+import { deviceType } from "../interfaces/reads";;
 import { signupUser } from "./factories/authFactory";
 import { bulkCreateDevices } from "./factories/deviceFactory";
 import { userData } from "./factories/authFactory";

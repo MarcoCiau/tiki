@@ -1,13 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import mongoose from 'mongoose';
 import { StatusCodes } from "http-status-codes";
-import ReadsModel from '../models/reads';
-import DeviceModel from '../models/device';
-import { aggregateReads } from '../util/db.queries';
-import { NotFoundError } from '../errors';
-import { sensorType } from '../util/read.types';
 import { reportData } from '../services/socketService';
-import { Reads, readsGetObj } from '../util/readModel.types';
 import ReadService from '../services/readService';
 import { isValidObjectId } from 'mongoose';
 export const getReads = async (req: Request, res: Response, next: NextFunction) => {

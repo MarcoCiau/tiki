@@ -1,16 +1,14 @@
 import request from "../config/testConfig";
 import { connectDB, disconnectDB } from "../config/db";
-import DeviceModel, { Device } from "../models/device";
+import DeviceModel from "../models/device";
 import UserModel from "../models/user";
-import { deviceType } from "../util/read.types";
 import { signupUser } from "./factories/authFactory";
 import { createDevice } from "./factories/deviceFactory";
 import { userData } from "./factories/authFactory";
 import { buildReadRequestPayload, bulkCreateReads } from "./factories/readFactory";
-import { now, Types } from "mongoose";
+import { Types } from "mongoose";
 import { singleDeviceResponse } from "../services/deviceService";
 
-import {Reads, SensorData} from "../util/readModel.types";
 import ReadsModel from "../models/reads";
 
 const readURLBase: string =   "/api/v1/read";

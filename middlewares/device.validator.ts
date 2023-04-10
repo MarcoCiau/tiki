@@ -1,6 +1,6 @@
 import { body, query, CustomValidator, param, validationResult, Result } from 'express-validator';
 import { Request, Response } from 'express';
-import { deviceType } from '../util/read.types';
+import { deviceType } from '../interfaces/reads';
 import { BadRequestError } from '../errors';
 import { deviceConnectionStatus, deviceSortOptions } from '../util/device.quety.types';
 const macRegexPattern = new RegExp("^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})|([0-9a-fA-F]{4}\\.[0-9a-fA-F]{4}\\.[0-9a-fA-F]{4})$");

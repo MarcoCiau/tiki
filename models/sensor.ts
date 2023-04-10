@@ -1,5 +1,5 @@
 import { Schema, model, Types } from "mongoose";
-import { deviceType, sensorType } from "../util/read.types";
+import { sensorType } from "../interfaces/reads";
 
 interface Sensor {
     deviceId: Types.ObjectId,

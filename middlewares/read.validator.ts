@@ -1,6 +1,6 @@
 import { body, param, query, validationResult, Result, CustomValidator, checkSchema, Schema } from 'express-validator';
 import { Request, Response } from 'express';
-import { sensorType, unitType } from '../util/read.types';
+import { sensorType, unitType } from '../interfaces/reads';
 
 let validateArrayType: CustomValidator = value => {
     return (Array.isArray(value) && value.length >= 3 && value.length <= 7);
