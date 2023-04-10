@@ -37,7 +37,7 @@ export interface SensorData {
 }
 
 /// define sensor dataset for creating new entry
-export interface Reads {
+export interface Read {
     deviceId?: Types.ObjectId,
     token: string,
     timestamp: Date | number,

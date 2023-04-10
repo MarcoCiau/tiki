@@ -2,12 +2,12 @@ import { Types } from 'mongoose';
 import ReadsModel from '../models/reads';
 import DeviceModel from '../models/device';
 import { aggregateReads } from '../util/db.queries';
-import { Reads, readsGetObj,sensorType }  from "../interfaces/reads";
+import { Read, readsGetObj,sensorType }  from "../interfaces/reads";
 import { NotFoundError } from '../errors';
 
 export interface getReadResponse {
     msg: string,
-    read: Reads,
+    read: Read,
 }
 
 export interface getAllReadsResponse {
@@ -17,7 +17,7 @@ export interface getAllReadsResponse {
 
 export interface createReadResponse {
     msg: string,
-    read?: Reads
+    read?: Read
 }
 
 class ReadService {
@@ -78,7 +78,7 @@ class ReadService {
         }
     }
 
-    async getOne(readId: Types.ObjectId): Promise <Reads> {
+    async getOne(readId: Types.ObjectId): Promise <Read> {
         try {
             const result = await ReadsModel.findOne({ _id: readId });
             if (!result) {
@@ -91,7 +91,7 @@ class ReadService {
         }
     }
 
-    async createOne(token: string, newRead: Partial<Reads>): Promise <createReadResponse> {
+    async createOne(token: string, newRead: Partial<Read>): Promise <createReadResponse> {
         try {
             const { timestamp, metadata } = newRead;
             const sensorEpochtime = Number(timestamp) || 0;

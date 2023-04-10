@@ -1,8 +1,8 @@
 
 import readService from "../../services/readService";
-import { Reads, sensorType, unitType } from "../../interfaces/reads";
+import { Read, sensorType, unitType } from "../../interfaces/reads";
 
-export const buildReadRequestPayload = (deviceToken: string): Reads => {
+export const buildReadRequestPayload = (deviceToken: string): Read => {
     return {
         token: deviceToken,
         timestamp: Date.now(),
@@ -42,7 +42,7 @@ export const buildReadRequestPayload = (deviceToken: string): Reads => {
     }
 }
 
-export const createRead = (token: string, read: Partial<Reads>) => {
+export const createRead = (token: string, read: Partial<Read>) => {
     return readService.createOne(token, read);
 }
 
