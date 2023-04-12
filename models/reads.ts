@@ -1,20 +1,7 @@
 import { Schema, model, Types } from "mongoose";
-import { sensorType, unitType } from "../util/read.types";
-import { Reads, SensorData } from "../util/readModel.types";
-// interface sensorData {
-//     _id: Types.ObjectId,
-//     type: sensorType,
-//     value: number,
-//     unit: unitType
-// }
+import { sensorType, unitType, Read, SensorData } from "../interfaces/reads";
 
-// interface Reads {
-//     deviceId: Types.ObjectId,
-//     timestamp: Date,
-//     metadata: sensorData[]
-// }
-
-const readSchema: Schema<Reads> = new Schema({
+const readSchema: Schema<Read> = new Schema({
     deviceId: {
         type: Schema.Types.ObjectId,
         required: true,
@@ -41,7 +28,16 @@ const readSchema: Schema<Reads> = new Schema({
             required: true
         }
     })]
-});
+},
+    {
+        timeseries: {
+            timeField: 'timestamp',
+            metaField: 'metadata',
+            granularity: 'minutes'
+        }
+    }
+
+);
 
 
 readSchema.methods.toJSON = function () {
@@ -49,6 +45,6 @@ readSchema.methods.toJSON = function () {
     return reads;
 }
 
-const ReadsModel = model<Reads>('Reads', readSchema);
+const ReadsModel = model<Read>('Reads', readSchema);
 
 export default ReadsModel;
