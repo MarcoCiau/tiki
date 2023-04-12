@@ -44,7 +44,7 @@ export interface Read {
     metadata: SensorData[]
 }
 
-interface sensorDataset {
+export interface sensorDataset {
     timestamp: Date | number,
     value: number,
 }
@@ -63,4 +63,8 @@ export interface readsGetObj {
     voltage?: sensorDataset[],
     activeKwh?: sensorDataset[],
     frequencyTS?: sensorDataset[]
+}
+
+export interface aggregateReadsObj {
+    _id: sensorDataset
 }

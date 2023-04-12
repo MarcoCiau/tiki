@@ -1,6 +1,6 @@
 import ReadsModel from "../models/reads";
 import { Types } from 'mongoose';
-import { sensorType } from "../interfaces/reads";
+import { sensorType, aggregateReadsObj, sensorDataset } from "../interfaces/reads";
 
 export const executeReadsQuery = (query: string, from: number = 0, limit: number = 5, sort: number = 1) => {
     return new Promise((resolve, reject) => {
@@ -24,7 +24,7 @@ export const executeReadsQuery = (query: string, from: number = 0, limit: number
     });
 }
 
-export const aggregateReads = async (device: Types.ObjectId, sensor: sensorType, limit: number = 50) => {
+export const aggregateReads = async (device: Types.ObjectId, sensor: sensorType, limit: number = 50): Promise <aggregateReadsObj[]> => {
     return await ReadsModel.aggregate([
         { $unwind: "$metadata" },
         { $match: { $and: [{ "deviceId": device }, { "metadata.type": sensor }] } },
@@ -34,4 +34,14 @@ export const aggregateReads = async (device: Types.ObjectId, sensor: sensorType,
         { $sort : { "_id.timestamp" : -1 } },
         { $limit : limit },
     ])
+}
+
+export const processReads = async (reads: aggregateReadsObj[]): Promise<sensorDataset[]> => {
+    return new Promise<sensorDataset[]>((resolve , reject) => {
+        if (reads.length === 0) resolve([]);
+        const data = reads.map((read) => {
+            return read._id;
+        }); 
+        resolve(data);
+    })
 }
