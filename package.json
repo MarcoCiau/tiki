@@ -7,7 +7,7 @@
     "node": "18.x"
   },
   "scripts": {
-    "compile": "tsc",
+    "compile": "npx --package=typescript -- tsc",
     "install-client": "cd tiki_client && npm install",
     "build-client": "cd tiki_client && npm run build",
     "deploy-client":"mv ./tiki_client/build ./dist",
