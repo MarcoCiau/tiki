@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Tiki IoT is an app focused on real-time monitoring and managing IoT devices (temperature sensors, energy meters, etc)",
   "main": "index.js",
+  "engines": {
+    "node": "18.x"
+  },
   "scripts": {
     "compile": "tsc",
     "install-client": "cd tiki_client && npm install",
