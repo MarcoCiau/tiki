@@ -23,13 +23,6 @@ For a future version I'm considering to add new features based on Redis and buil
 ## What was your process for completing this project?
 I managed this project making a [Trello Board](https://trello.com/invite/b/4ePhdifc/ATTIa8d1d320edefe8dd33c39ea096d33d2530CD388A/iot-platform) with Kanban Lean management method.
 
-## Demo
-Access my app [here](https://tiki-iot.herokuapp.com/).
-
-To take it for a test run, try these login credentials:
-- **Email Address**: testuser3@email.com
-- **Password**: qwertyui8
-
 ## Architecture 
 Tiki IoT Platform v1.0 is based on monolithic architecture where all components are launched in a single Node.js server.
 
